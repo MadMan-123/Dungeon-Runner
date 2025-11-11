@@ -23,14 +23,11 @@ partial struct BulletSystem : ISystem
     {
         
         ecb = new(Unity.Collections.Allocator.Temp);
-        foreach((
-                RefRW<LocalTransform> localTransform,
-                RefRW<Bullet> bullet,
-                Entity entity) in
-                SystemAPI.Query<
-                    RefRW<LocalTransform>,
-                    RefRW<Bullet>>().WithEntityAccess().WithAll<Simulate>()
-            )
+        foreach (var (localTransform, bullet, entity) in
+                SystemAPI.Query<RefRW<LocalTransform>, RefRW<Bullet>>()
+                         .WithAll<Simulate>()
+                         .WithAll<ActiveBullet>()
+                         .WithEntityAccess())
         {
             if (!state.WorldUnmanaged.IsServer())
                 continue;
@@ -42,14 +39,14 @@ partial struct BulletSystem : ISystem
             
             
             bullet.ValueRW.timer -= SystemAPI.Time.DeltaTime;
-            if(bullet.ValueRW.timer <= 0f)
+            if (bullet.ValueRW.timer <= 0f)
             {
-                //turn off bullet from the shoot system pool
                 ecb.SetComponentEnabled<Bullet>(entity, false);
                 ecb.SetComponentEnabled<MaterialMeshInfo>(entity, false);
-
+                ecb.RemoveComponent<ActiveBullet>(entity);
             }
-            
+
+
 
         }
         ecb.Playback(state.EntityManager);

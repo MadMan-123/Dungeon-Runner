@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3712946724381355297}
   - component: {fileID: 1982796533940360938}
   - component: {fileID: 3504413110328071288}
-  - component: {fileID: -9014636648259526771}
+  - component: {fileID: -6929421546792127114}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -66,8 +66,6 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -89,7 +87,6 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -126,7 +123,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5437290155796984136}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3fba908141eb4714081525ee9b839e52, type: 3}
+  m_Script: {fileID: 11500000, guid: 9fec04cc395f01e479436417f63a8564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAuthoring
 --- !u!114 &1982796533940360938
@@ -167,7 +164,7 @@ MonoBehaviour:
   UseSingleBaseline: 1
   RollbackPredictedSpawnedGhostState: 0
   RollbackPredictionOnStructuralChanges: 1
---- !u!114 &-9014636648259526771
+--- !u!114 &-6929421546792127114
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,6 +173,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 5437290155796984136}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92d60a622607aba4b9d44a9b449b8055, type: 3}
+  m_Script: {fileID: 11500000, guid: 3a7039e18e8496f44b5c98dd086b9d89, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NetcodePlayerInputAuthoring
+  m_EditorClassIdentifier: 

@@ -19,9 +19,11 @@ partial struct ShootSystem : ISystem, ISystemStartStop
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        bulletPoolSize = 5000;
+        bulletPoolSize = 1000;
+        //nextFreeBulletIndex = 0;
         state.RequireForUpdate<EntitiesReferences>();
         state.RequireForUpdate<NetworkTime>();
+
     }
 
     [BurstCompile]
@@ -67,13 +69,12 @@ partial struct ShootSystem : ISystem, ISystemStartStop
             bulletArray.Dispose();
     }
 
-   [BurstCompile]
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-    
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        int bulletsPerShot = 100; // manageable number
+        int bulletsPerShot = 100;
 
         var claimed = new NativeArray<byte>(bulletPoolSize, Allocator.Temp);
 
@@ -84,19 +85,27 @@ partial struct ShootSystem : ISystem, ISystemStartStop
                  RefRO<GhostOwner>>()
              .WithAll<Simulate>())
         {
+            //check if shooting can be performed
             if (!npi.ValueRO.shoot.IsSet)
                 continue;
 
+
+            //shoot multiple bullets
             for (int i = 0; i < bulletsPerShot; i++)
             {
-                Entity bullet = GetPooledBullet(ref state, ref ecb, ref claimed);
+                //get a bullet entity
+                Entity bullet = GetPooledBullet(ref state,ref ecb, ref claimed);
+
+                //sanity check
                 if (bullet == Entity.Null)
                     break; // out of pool
 
+                //work out the direction needed to launch in a circle
                 float angle = math.radians((360f / bulletsPerShot) * i);
                 float3 offset = new float3(math.cos(angle), 0, math.sin(angle)) * 0.5f;
                 float3 dir = math.normalize(offset);
 
+                //update transform data
                 ecb.SetComponent(bullet, new LocalTransform
                 {
                     Position = localTransform.ValueRO.Position + offset,
@@ -104,53 +113,72 @@ partial struct ShootSystem : ISystem, ISystemStartStop
                     Scale = 1f
                 });
 
+                //update bullet data
                 ecb.SetComponent(bullet, new Bullet
                 {
-                    timer = 10f,
+                    timer = 5f,
                     vel = dir
                 });
 
+                //update the network id to be the current owner
                 ecb.SetComponent(bullet, new GhostOwner { NetworkId = owner.ValueRO.NetworkId });
 
+                // When shooting
                 ecb.SetComponentEnabled<Bullet>(bullet, true);
+                ecb.SetComponentEnabled<MaterialMeshInfo>(bullet, true);
+                ecb.AddComponent<ActiveBullet>(bullet);
 
-                // Only enable render component if the entity actually has it.
-                if (state.EntityManager.HasComponent<MaterialMeshInfo>(bullet))
-                    ecb.SetComponentEnabled<MaterialMeshInfo>(bullet, true);
+
             }
         }
 
+        //clean up
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
 
         claimed.Dispose();
-}
-
-[BurstCompile]
-private Entity GetPooledBullet(ref SystemState state, ref EntityCommandBuffer ecb, ref NativeArray<byte> claimed)
-{
-    var mgr = state.EntityManager;
-    for (int i = 0; i < bulletPoolSize; i++)
-    {
-        Entity e = bulletArray[i];
-
-        //entity must still exist
-        if (!mgr.Exists(e))
-            continue;
-
-        //bullet component must exist on prefab instances
-        if (!mgr.HasComponent<Bullet>(e))
-            continue;
-        if (!mgr.IsComponentEnabled<Bullet>(e) && claimed[i] == 0)
-        {
-            //mark claimed so subsequent calls in this frame won't return the same entity
-            claimed[i] = 1;
-            return e;
-        }
     }
 
-    return Entity.Null;
-}
+    [BurstCompile]
+    private Entity GetPooledBullet(ref SystemState state, ref EntityCommandBuffer ecb, ref NativeArray<byte> claimed)
+    {
+        var mgr = state.EntityManager;
+        for (int i = 0; i < bulletPoolSize; i++)
+        {
+            Entity e = bulletArray[i];
+
+            if (!mgr.Exists(e))
+                continue;
+            if (!mgr.HasComponent<Bullet>(e))
+                continue;
+            if (!mgr.IsComponentEnabled<Bullet>(e) && claimed[i] == 0)
+            {
+                claimed[i] = 1;
+                return e;
+            }
+
+        }
+
+        return Entity.Null;
+    }
+/*
+    private int nextFreeBulletIndex;
+
+    private Entity GetPooledBullet(ref SystemState state)
+    {
+        var mgr = state.EntityManager;
+        for (int i = 0; i < bulletPoolSize; i++)
+        {
+            int idx = (nextFreeBulletIndex + i) % bulletPoolSize;
+            Entity e = bulletArray[idx];
+            if (!mgr.IsComponentEnabled<Bullet>(e))
+            {
+                nextFreeBulletIndex = (idx + 1) % bulletPoolSize;
+                return e;
+            }
+        }
+        return Entity.Null;
+    }*/
 
 
     [BurstCompile]

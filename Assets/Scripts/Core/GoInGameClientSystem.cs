@@ -17,7 +17,7 @@ partial struct GoInGameClientSystem : ISystem
         EntityCommandBuffer ecb = new(Unity.Collections.Allocator.Temp);
 
         //This is the pattern to get data,
-        foreach ((RefRO<NetworkId> networkId, Entity entity) in 
+        foreach (var (networkId, entity) in 
                  (SystemAPI.Query<RefRO<NetworkId>>()
                      .WithNone<NetworkStreamInGame>()
                      .WithEntityAccess()))

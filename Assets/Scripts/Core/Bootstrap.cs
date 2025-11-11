@@ -9,6 +9,10 @@ public class Bootstrap : ClientServerBootstrap
     {
         //set the port
         AutoConnectPort = 7979;
-        return base.Initialize(defaultWorldName);
+        var ok = base.Initialize(defaultWorldName); 
+        Application.targetFrameRate = 60;
+
+
+        return ok;
     }
 }

@@ -212,10 +212,11 @@ MonoBehaviour:
       - rid: 2693961076454195212
       - rid: 2693961076454195214
       - rid: 2693961076454195217
+      - rid: 2693961076454195218
       - rid: 2693961076454195220
+      - rid: 2693961076454195221
+      - rid: 2693961076454195222
       - rid: 2693961076454195223
-      - rid: 2693961077557297341
-      - rid: 2693961077557297342
   renderingLayerNames:
   - Light Layer default
   - Light Layer 1
@@ -260,6 +261,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 2693961076454195200
       type: {class: RenderingPathFrameSettings, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:
