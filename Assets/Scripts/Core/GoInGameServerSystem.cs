@@ -33,6 +33,9 @@ partial struct GoInGameServerSystem : ISystem
             //set to random pos on x axis
             ecb.SetComponent(player,LocalTransform.FromPosition((new float3(UnityEngine.Random.Range(-10,+10),0,0))));
 
+            //get the local camera of the player and enable it
+
+
             //get network id
             NetworkId id = SystemAPI.GetComponent<NetworkId>(rpc.ValueRO.SourceConnection);
             

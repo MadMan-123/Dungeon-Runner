@@ -21,7 +21,7 @@ public partial struct ShootSystem : ISystem
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         var entitiesRefs = SystemAPI.GetSingleton<EntitiesReferences>();
 
-        int bulletsPerShot = 25;
+        int bulletsPerShot = 10;
         float radius = 0.5f;
 
         foreach (var (npi, localTransform, owner) in

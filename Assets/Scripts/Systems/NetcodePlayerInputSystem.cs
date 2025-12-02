@@ -26,6 +26,10 @@ partial struct NetcodePlayerInputSystem : ISystem
             inputVector.x = Input.GetAxis("Horizontal");
             inputVector.y = Input.GetAxis("Vertical");
 
+   
+            
+            
+            
             netcodePlayerInput.ValueRW.InputVec = inputVector;
 
             if(Input.GetButtonDown("Fire"))
@@ -36,6 +40,8 @@ partial struct NetcodePlayerInputSystem : ISystem
             {
                 netcodePlayerInput.ValueRW.shoot = default;
             }
+            
+            
         }
     }
 

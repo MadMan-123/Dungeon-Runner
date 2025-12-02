@@ -6,6 +6,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
     public GameObject playerPrefabGameObject;
     public GameObject bulletPrefabGameObject;
     public GameObject agentPrefabGameObject;
+
     public class Baker : Baker<EntitiesReferencesAuthoring>
     {
         public override void Bake(EntitiesReferencesAuthoring authoring)
@@ -14,7 +15,6 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
             Entity playerPrefab = GetEntity(authoring.playerPrefabGameObject, TransformUsageFlags.Dynamic);
             Entity bulletPrefab = GetEntity(authoring.bulletPrefabGameObject, TransformUsageFlags.Dynamic);
             Entity agentPrefab = GetEntity(authoring.agentPrefabGameObject, TransformUsageFlags.Dynamic);
-
 
             AddComponent(entity, new EntitiesReferences
             {
