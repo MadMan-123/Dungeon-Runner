@@ -1,35 +1,86 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerDataDescriptor
+public class PlayerDataDescriptor : INetworkSerializable 
 {
-    public string name;
     public int index;
     public ulong id;
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref index);
+        serializer.SerializeValue(ref id);
+        
+        
+    }
 }
 
 public class PlayerManager : NetworkBehaviour
 {
-
+    public static PlayerManager instance;
     private static Dictionary<string, PlayerDataDescriptor> playerMap = new();
     public int maxPlayers = 4;
     public NetworkVariable<int> currentPlayers = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
 
+    public override void OnNetworkSpawn()
+    {
+        if (!instance)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(instance);
+        }
+        base.OnNetworkSpawn();
+    }
 
     public bool AddPlayer(string playerName, PlayerDataDescriptor data)
     {
         //try check if the map contains the name already
-        if (playerMap.TryAdd(playerName, data)) return true;
+        if (playerMap.TryAdd(playerName, data))
+        {
+            Debug.Log($"Added player: {playerName} to map");
+            currentPlayers.Value++;
+            
+            UpdatePlayerManagerServerRPC(playerName, data);
+            return true;
+        }
         //debug that we cant add
         Debug.LogWarning($"Player: {playerName} is already in the session");
         return false;
 
+
     }
 
+    [ServerRpc]
+    private void UpdatePlayerManagerServerRPC(string playerName, PlayerDataDescriptor data)
+    {
+        if (!IsServer)
+        {
+            Debug.LogWarning("Only the server can update the player manager");
+            return;
+        }
+
+        UpdatePlayerManagerClientRPC(playerName, data);
+    }
+    
+    [ClientRpc]
+    private void UpdatePlayerManagerClientRPC(string playerName, PlayerDataDescriptor data)
+    {
+        if(AddPlayer(playerName, data))
+        {
+            //notify all clients of the new player
+            Debug.Log($"[Server]: {playerName} has joined the chat.");
+        } 
+    }
+    
+    
     public bool RemovePlayer(string playerName)
     {
         if (!playerMap.ContainsKey(playerName))

@@ -9,29 +9,33 @@ using UnityEngine.SceneManagement;
 public class FPSManager : NetworkManager
 {
     
-    public void StartGame()
+    public void Startlobby()
     {
         //host and load the Main scene
         StartHost();
         
         //load next scene 
         
-        LoadWorld();
+        LoadLobby();
     }
 
-    public void JoinGame()
+    public void JoinLobby()
     {
         //TODO: List all hosted games
-
         StartClient();
         
-       //LoadWorld(); 
+       LoadLobby(); 
     }
 
     public void LoadWorld()
     {
-        
-        var main = SceneManager.LoadScene("Main World",LoadSceneMode.Single);
+        var main = SceneManager.LoadScene("World", LoadSceneMode.Single);
+    }
+    
+    
+    public void LoadLobby()
+    {
+        var main = SceneManager.LoadScene("Lobby",LoadSceneMode.Single);
     }
     
     #region GUI

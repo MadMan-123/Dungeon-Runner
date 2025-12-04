@@ -132,7 +132,6 @@ public class ChatManager : NetworkBehaviour
         PlayerDataDescriptor data = new PlayerDataDescriptor
         {
             id = playerId,
-            name = playerName,
             index = playerIndex
         };
 
@@ -172,7 +171,7 @@ public class ChatManager : NetworkBehaviour
             return;
         }
         //send to all clients
-        SendChatMessageClientRPC(message,data.name,senderID);
+        //SendChatMessageClientRPC(message,,senderID);
     }
 
     [ClientRpc]

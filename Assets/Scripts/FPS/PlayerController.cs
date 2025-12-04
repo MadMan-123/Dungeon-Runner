@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
@@ -28,24 +29,23 @@ public class PlayerController : NetworkBehaviour
     private float yRotation;
     private Vector3 jumpVec;
     private Transform moveTransform;
+
+    private bool isLobby = false;
+
     private void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        if (!TryGetComponent<CharacterController>(out characterController))
+        if (!TryGetComponent(out characterController))
         {
             Debug.LogError("No CharacterController found on the player");
             enabled = false;
-            return;
         }
-        
-        
     }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        
+            
         camera.enabled = false;
         //are we the owner, if so enable the camera, else disable it
         StartCoroutine(WaitAndSpawn());
@@ -58,9 +58,18 @@ public class PlayerController : NetworkBehaviour
         yield return new WaitForSeconds(0.75f);
         
         points = SpawnPointManager.Instance;
-        camera.enabled = IsOwner;
+        isLobby = SceneManager.GetActiveScene().name == "Lobby";
+         if (!isLobby)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
         
-        points.SpawnPlayerIn(gameObject);
+       
+        if(!isLobby)
+            camera.enabled = IsOwner;
+        
+        points?.SpawnPlayerIn(gameObject);
     }
 
 
