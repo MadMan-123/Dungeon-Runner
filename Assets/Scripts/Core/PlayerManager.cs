@@ -22,7 +22,7 @@ public class PlayerDataDescriptor : INetworkSerializable
 public class PlayerManager : NetworkBehaviour
 {
     public static PlayerManager instance;
-    private static Dictionary<string, PlayerDataDescriptor> playerMap = new();
+    public Dictionary<string, PlayerDataDescriptor> playerMap = new();
     public int maxPlayers = 4;
     public NetworkVariable<int> currentPlayers = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 

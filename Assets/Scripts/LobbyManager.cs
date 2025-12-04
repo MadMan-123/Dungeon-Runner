@@ -9,6 +9,7 @@ public class LobbyManager : NetworkBehaviour
    
     public string currentName = "John";
     public TextMeshProUGUI nameText;
+    public TextMeshProUGUI playerListText;
     public TMP_InputField nameInput;
     public NetworkVariable<int> readyCount;
 
@@ -37,9 +38,9 @@ public class LobbyManager : NetworkBehaviour
     public void UpdateNameText()
     {
         nameText.text = $"You are: {currentName} a {ClassSelector.instance.currentType.ToString()}";
-        
-        
     }
+    
+
     
     private void GetName(string input)
     {
@@ -49,7 +50,7 @@ public class LobbyManager : NetworkBehaviour
     }
     public void UpdatePlayerName(string oldName, string newName)
     {
-        UpdatePlayerNameServerRPC(currentName, newName);
+        UpdatePlayerNameServerRPC(oldName, newName);
         currentName = newName;  
     }
 
@@ -65,6 +66,7 @@ public class LobbyManager : NetworkBehaviour
         if (!players.HasPlayer(oldName))
         {
             Debug.LogWarning($"Player {oldName} does not exist");
+
             return;
         }
 
@@ -82,8 +84,23 @@ public class LobbyManager : NetworkBehaviour
         players.AddPlayer(newName, data);
         //compensate for changing the data
         players.currentPlayers.Value--;
+       
+        UpdatePlayerList();
     }
-    
+
+    public void UpdatePlayerList()
+    {
+        //get all the keys and add to one big string seperated with \n
+        var output = "";
+
+        playerListText.text = "";
+        foreach (var key in players.playerMap.Keys)
+        {
+            output += key + "\n";
+        }
+
+        playerListText.text = output;
+    }
     public void ReadyUp()
     {
         var manager = (FPSManager)(NetworkManager.Singleton);

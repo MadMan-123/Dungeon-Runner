@@ -16,45 +16,70 @@ public class PlayerBootstrap : NetworkBehaviour
     }
     IEnumerator WaitAndSpawn()
     {
-        //this is bullshit
-        yield return new WaitForSeconds(0.75f);
+        yield return new WaitForSeconds(0.5f);
 
-        var name = $"Player{PlayerManager.instance.currentPlayers.Value}";
-        LobbyManager.instance.currentName = name;
-        LobbyManager.instance.UpdateNameText();
+        // Stable name derived from OwnerClientId; server is authoritative
+        var name = $"Player{OwnerClientId}";
+        // Only set the local player's display name on their own client
+        if (IsOwner || IsLocalPlayer)
+        {
+            LobbyManager.instance.currentName = name;
+            LobbyManager.instance.UpdateNameText();
+        }
         players = PlayerManager.instance;
         
-        PlayerDataDescriptor data = new()
-        {
-            index = 0,
-            id = NetworkObjectId,
-        };
-
-        UpdatePlayerManagerServerRPC(name,data);
+        // Request server-authoritative add
+        UpdatePlayerManagerServerRPC(name);
+        
     } 
     
     [ServerRpc(RequireOwnership = false)]
-    private void UpdatePlayerManagerServerRPC(string playerName, PlayerDataDescriptor data)
+    private void UpdatePlayerManagerServerRPC(string playerName, ServerRpcParams rpcParams = default)
     {
-        UpdatePlayerManagerClientRPC(playerName, data);
+        if (players == null) players = PlayerManager.instance;
+        var senderId = rpcParams.Receive.SenderClientId;
+        //compute index deterministically 
+        var idx = players.playerMap.Count;
+        if (players.HasPlayer(playerName))
+        {
+            // Target only the joining client to align their local state
+            var existing = players.GetPlayer(playerName);
+            var targetParams = new ClientRpcParams
+            {
+                Send = new ClientRpcSendParams { TargetClientIds = new[] { senderId } }
+            };
+            ApplyAddClientRPC(playerName, existing.index, existing.id, targetParams);
+            return;
+        }
+        var data = new PlayerDataDescriptor
+        {
+            index = idx,
+            id = senderId
+        };
+        //server is the only writer; add and then mirror only to the joining client
+        players.AddPlayer(playerName, data);
+        var clientParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams { TargetClientIds = new[] { senderId } }
+        };
+        ApplyAddClientRPC(playerName, idx, senderId, clientParams);
     }
     
     [ClientRpc]
-    private void UpdatePlayerManagerClientRPC(string playerName, PlayerDataDescriptor data)
+    private void ApplyAddClientRPC(string playerName, int index, ulong id, ClientRpcParams clientRpcParams = default)
     {
-        if(players.AddPlayer(playerName, data))
+        if (players == null) players = PlayerManager.instance;
+        if (!players.HasPlayer(playerName))
         {
-            //notify all clients of the new player
-            Debug.Log($"[Server]: {playerName} has joined the chat.");
+            var data = new PlayerDataDescriptor { index = index, id = id };
+            players.AddPlayer(playerName, data);
+        }
 
-            IEnumerator DelayedVisualUpdate()
-            {
-                //wait a bit to sync up data
-                yield return new WaitForSeconds(0.15f);
-                //update the player list
-            }
-            
-            StartCoroutine(DelayedVisualUpdate());
-        } 
+        IEnumerator DelayedVisualUpdate()
+        {
+            yield return new WaitForSeconds(0.15f);
+            LobbyManager.instance.UpdatePlayerList();
+        }
+        StartCoroutine(DelayedVisualUpdate());
     }
 }
