@@ -40,15 +40,16 @@ public class PlayerManager : NetworkBehaviour
         base.OnNetworkSpawn();
     }
 
+  
     public bool AddPlayer(string playerName, PlayerDataDescriptor data)
     {
+        
         //try check if the map contains the name already
         if (playerMap.TryAdd(playerName, data))
         {
             Debug.Log($"Added player: {playerName} to map");
             currentPlayers.Value++;
             
-            UpdatePlayerManagerServerRPC(playerName, data);
             return true;
         }
         //debug that we cant add
@@ -58,28 +59,7 @@ public class PlayerManager : NetworkBehaviour
 
     }
 
-    [ServerRpc]
-    private void UpdatePlayerManagerServerRPC(string playerName, PlayerDataDescriptor data)
-    {
-        if (!IsServer)
-        {
-            Debug.LogWarning("Only the server can update the player manager");
-            return;
-        }
 
-        UpdatePlayerManagerClientRPC(playerName, data);
-    }
-    
-    [ClientRpc]
-    private void UpdatePlayerManagerClientRPC(string playerName, PlayerDataDescriptor data)
-    {
-        if(AddPlayer(playerName, data))
-        {
-            //notify all clients of the new player
-            Debug.Log($"[Server]: {playerName} has joined the chat.");
-        } 
-    }
-    
     
     public bool RemovePlayer(string playerName)
     {
