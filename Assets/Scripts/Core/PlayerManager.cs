@@ -63,12 +63,12 @@ public class PlayerManager : NetworkBehaviour
     
     public bool RemovePlayer(string playerName)
     {
-        if (!playerMap.ContainsKey(playerName))
+        if (!HasPlayer(playerName))
         {
             Debug.LogWarning($"there is no {playerName} in the map");
             return false;
         }
-
+        Debug.Log($"Removing player: {playerName} from map");
         playerMap.Remove(playerName);
         return true;
     }
@@ -80,7 +80,7 @@ public class PlayerManager : NetworkBehaviour
 
     public PlayerDataDescriptor GetPlayer(string playerName)
     {
-        if (!playerMap.ContainsKey(playerName))
+        if (!HasPlayer(playerName))
         {
             //cannot get 
             Debug.LogWarning($"{playerName} does not exist");
@@ -98,4 +98,6 @@ public class PlayerManager : NetworkBehaviour
         Debug.LogWarning($"No player with id {senderID} found");
         return null;
     }
+
+   
 }

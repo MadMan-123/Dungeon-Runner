@@ -33,7 +33,7 @@ public class PlayerBootstrap : NetworkBehaviour
         UpdatePlayerManagerServerRPC(name,data);
     } 
     
-      [ServerRpc(RequireOwnership = false)]
+    [ServerRpc(RequireOwnership = false)]
     private void UpdatePlayerManagerServerRPC(string playerName, PlayerDataDescriptor data)
     {
         UpdatePlayerManagerClientRPC(playerName, data);
