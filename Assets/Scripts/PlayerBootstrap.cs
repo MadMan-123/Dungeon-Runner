@@ -54,7 +54,8 @@ public class PlayerBootstrap : NetworkBehaviour
         var data = new PlayerDataDescriptor
         {
             index = idx,
-            id = senderId
+            id = senderId,
+            currentClass = ClassSelector.ClassType.NoOne
         };
         //server is the only writer; add and then mirror only to the joining client
         players.AddPlayer(playerName, data);
@@ -71,7 +72,7 @@ public class PlayerBootstrap : NetworkBehaviour
         if (players == null) players = PlayerManager.instance;
         if (!players.HasPlayer(playerName))
         {
-            var data = new PlayerDataDescriptor { index = index, id = id };
+            var data = new PlayerDataDescriptor { index = index, id = id, currentClass = ClassSelector.ClassType.NoOne };
             players.AddPlayer(playerName, data);
         }
 

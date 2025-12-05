@@ -1,4 +1,5 @@
 using TMPro;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -46,12 +47,19 @@ public class LobbyManager : NetworkBehaviour
     {
         //update the name on the map
         UpdatePlayerName(currentName, input);
-        UpdateNameText();
     }
     public void UpdatePlayerName(string oldName, string newName)
     {
+        if (players.HasPlayer(newName))
+        {
+            return;
+        }
         UpdatePlayerNameServerRPC(oldName, newName);
-        currentName = newName;  
+        
+        currentName = newName; 
+        
+        UpdateNameText();
+        
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -96,7 +104,8 @@ public class LobbyManager : NetworkBehaviour
         playerListText.text = "";
         foreach (var key in players.playerMap.Keys)
         {
-            output += key + "\n";
+            var data = players.GetPlayer(key);
+            output += $"{key}:{data.currentClass.ToString()}\n";
         }
 
         playerListText.text = output;

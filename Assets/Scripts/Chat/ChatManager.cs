@@ -132,7 +132,8 @@ public class ChatManager : NetworkBehaviour
         PlayerDataDescriptor data = new PlayerDataDescriptor
         {
             id = playerId,
-            index = playerIndex
+            index = playerIndex,
+            currentClass = ClassSelector.ClassType.NoOne
         };
 
         if(players.AddPlayer(playerName, data))

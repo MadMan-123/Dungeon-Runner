@@ -9,11 +9,13 @@ public class PlayerDataDescriptor : INetworkSerializable
 {
     public int index;
     public ulong id;
+    public ClassSelector.ClassType currentClass;
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref index);
         serializer.SerializeValue(ref id);
+        serializer.SerializeValue(ref currentClass);
         
         
     }
