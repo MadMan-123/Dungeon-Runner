@@ -48,14 +48,15 @@ public class PlayerBootstrap : NetworkBehaviour
             {
                 Send = new ClientRpcSendParams { TargetClientIds = new[] { senderId } }
             };
-            ApplyAddClientRPC(playerName, existing.index, existing.id, targetParams);
+            ApplyAddClientRPC(playerName, existing.index, existing.id,targetParams);
             return;
         }
         var data = new PlayerDataDescriptor
         {
             index = idx,
             id = senderId,
-            currentClass = ClassSelector.ClassType.NoOne
+            currentClass = ClassSelector.ClassType.NoOne,
+            networkObject = NetworkObject
         };
         //server is the only writer; add and then mirror only to the joining client
         players.AddPlayer(playerName, data);
@@ -63,7 +64,7 @@ public class PlayerBootstrap : NetworkBehaviour
         {
             Send = new ClientRpcSendParams { TargetClientIds = new[] { senderId } }
         };
-        ApplyAddClientRPC(playerName, idx, senderId, clientParams);
+        ApplyAddClientRPC(playerName, idx, senderId,clientParams);
     }
     
     [ClientRpc]
@@ -72,7 +73,13 @@ public class PlayerBootstrap : NetworkBehaviour
         if (players == null) players = PlayerManager.instance;
         if (!players.HasPlayer(playerName))
         {
-            var data = new PlayerDataDescriptor { index = index, id = id, currentClass = ClassSelector.ClassType.NoOne };
+            var data = new PlayerDataDescriptor
+            {
+                index = index, 
+                id = id,
+                currentClass = ClassSelector.ClassType.NoOne,
+                networkObject = NetworkObject
+            };
             players.AddPlayer(playerName, data);
         }
 

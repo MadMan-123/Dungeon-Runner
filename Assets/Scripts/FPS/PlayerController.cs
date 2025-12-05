@@ -21,7 +21,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private SpawnPointManager points;
     private float force = 0.0f;
     private CharacterController characterController;
-    [SerializeField] Camera camera;
+    public Camera camera;
     private Vector3 moveVector = new Vector3(0, -9.8f, 0);
     private float moveHorizontal;
     private float moveVertical;
@@ -52,7 +52,7 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    IEnumerator WaitAndSpawn()
+    public IEnumerator WaitAndSpawn()
     {
         //this is bullshit
         yield return new WaitForSeconds(0.75f);

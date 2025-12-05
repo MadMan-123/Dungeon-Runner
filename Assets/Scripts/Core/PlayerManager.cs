@@ -10,6 +10,7 @@ public class PlayerDataDescriptor : INetworkSerializable
     public int index;
     public ulong id;
     public ClassSelector.ClassType currentClass;
+    public NetworkObject networkObject;
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {

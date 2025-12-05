@@ -134,7 +134,7 @@ public class LobbyManager : NetworkBehaviour
         readyCount.Value += isReady ? 1 : -1;
         UpdateReadyClientRPC(readyCount.Value);
         
-        if (IsHost && readyCount.Value == players.currentPlayers.Value)
+        if (readyCount.Value == players.currentPlayers.Value)
         {
             //load world
             Debug.Log("Load World Scene for all clients");
