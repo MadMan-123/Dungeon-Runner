@@ -28,7 +28,7 @@ public class FPSManager : NetworkManager
 
     public void LoadWorld()
     {
-        var main = SceneManager.LoadScene("World", LoadSceneMode.Single);
+        var main = SceneManager.LoadScene("Main World", LoadSceneMode.Single);
     }
     
     

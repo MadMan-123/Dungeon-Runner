@@ -81,6 +81,8 @@ public class PlayerBootstrap : NetworkBehaviour
             yield return new WaitForSeconds(0.15f);
             LobbyManager.instance.UpdatePlayerList();
             LobbyManager.instance.UpdatePlayerCountText();
+            
+            LobbyManager.instance.UpdateReadyCountText(LobbyManager.instance.readyCount.Value);
         }
         StartCoroutine(DelayedVisualUpdate());
     }

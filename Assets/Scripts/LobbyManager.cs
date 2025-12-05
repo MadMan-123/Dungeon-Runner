@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using System.Linq;
 using Unity.Netcode;
@@ -12,13 +13,16 @@ public class LobbyManager : NetworkBehaviour
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI playerListText;
     public TextMeshProUGUI playerCountText;
+    public TextMeshProUGUI readyCountText;
+    public GameObject readyButton;
     public TMP_InputField nameInput;
-    public NetworkVariable<int> readyCount;
-
+    public NetworkVariable<int> readyCount = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public bool localIsReady = false;
+    
     private PlayerManager players;
 
     private bool isHosting = false;
-    
+     
     private void Start()
     {
         nameInput.onSubmit.AddListener(GetName); 
@@ -46,7 +50,11 @@ public class LobbyManager : NetworkBehaviour
     {
         playerCountText.text = $"Connected Players: {players.currentPlayers.Value}";
     }
-    
+
+    public void UpdateReadyCountText(int value)
+    {
+        readyCountText.text = $"{value}/{players.currentPlayers.Value}";
+    }
     private void GetName(string input)
     {
         //update the name on the map
@@ -115,8 +123,47 @@ public class LobbyManager : NetworkBehaviour
     }
     public void ReadyUp()
     {
-        var manager = (FPSManager)(NetworkManager.Singleton);
+        localIsReady = !localIsReady;
+ 
+        //sync the ready count ui with all clients
+        RequestReadyUpdateServerRPC(localIsReady);
+    }
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestReadyUpdateServerRPC(bool isReady)
+    {
+        readyCount.Value += isReady ? 1 : -1;
+        UpdateReadyClientRPC(readyCount.Value);
         
+        if (IsHost && readyCount.Value == players.currentPlayers.Value)
+        {
+            //load world
+            Debug.Log("Load World Scene for all clients");
+            readyButton.SetActive(true); 
+            return;
+        }
+        
+        readyButton.SetActive(false); 
+    }
+
+  
+    [ClientRpc]
+    public void UpdateReadyClientRPC(int value)
+    {
+        
+        //update the UI after a few secconds
+        IEnumerator delay()
+        {
+            yield return new WaitForSeconds(0.25f);
+            UpdateReadyCountText(value);
+        }
+
+        StartCoroutine(delay());
+    }
+
+
+    public void StartGame()
+    {
+        var manager = (FPSManager)(NetworkManager.Singleton);
         manager.LoadWorld();
     }
 }
