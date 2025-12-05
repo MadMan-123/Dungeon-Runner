@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4197646579363195711}
   - component: {fileID: 6919656938526160624}
   - component: {fileID: -8478537082661250459}
+  - component: {fileID: 6701298729812773781}
   m_Layer: 0
   m_Name: FPSPlayer
   m_TagString: Untagged
@@ -50,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2430293318
+  GlobalObjectIdHash: 460646662
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -168,6 +169,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75fb5e037a6c05d47a66d12380478aa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &6701298729812773781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2687996144027486642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6df59a6e3cdfcc46a74d7f6b24bf413, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  ShowTopMostFoldoutHeaderGroup: 1
+  renderer: {fileID: 2616522130439953530}
 --- !u!1 &3883716326387575721
 GameObject:
   m_ObjectHideFlags: 0

@@ -52,6 +52,7 @@ namespace Core
 
             if (!nm.IsServer)
             {
+                // Only the server may call NetworkSceneManager.LoadScene. Clients should not.
                 UnityEngine.Debug.LogWarning($"[Loader.LoadNetwork] Ignoring client-side scene load request for '{sceneName}'. " +
                                              "Only the server/host may initiate network scene loads.");
                 return;

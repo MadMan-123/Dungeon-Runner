@@ -76,15 +76,22 @@ public class FPSManager : NetworkManager
             var player = kv.Value; 
             var obj = player.networkObject;
             
-            if (obj != null && obj.TryGetComponent(out PlayerController ctrl))
+            if ( obj.TryGetComponent(out PlayerController ctrl))
             {
-                if (ctrl.camera != null && ctrl.IsOwner)
+                if ( ctrl.IsOwner)
                 {
                     ctrl.camera.enabled = true;
                 }
                 StartCoroutine(ctrl.WaitAndSpawn());
             }
+
+            if (obj.TryGetComponent(out PlayerDataLoader loader))
+            {
+                loader.LoadClassData(player.currentClass);    
+            }
+            
         }
+        
     }
     
 

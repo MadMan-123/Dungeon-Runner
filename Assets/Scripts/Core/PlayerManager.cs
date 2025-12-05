@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,11 @@ public class PlayerManager : NetworkBehaviour
     public NetworkVariable<int> currentPlayers = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
 
+    private void Start()
+    {
+        DontDestroyOnLoad(gameObject); 
+    }
+
     public override void OnNetworkSpawn()
     {
         if (!instance)
@@ -40,6 +46,8 @@ public class PlayerManager : NetworkBehaviour
         {
             Destroy(instance);
         }
+        
+        
         base.OnNetworkSpawn();
     }
 
