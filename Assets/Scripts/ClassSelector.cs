@@ -3,7 +3,7 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
-public class ClassSelector : MonoBehaviour
+public class ClassSelector : NetworkBehaviour 
 {
     
     public ClassType currentType = ClassType.NoOne;
@@ -47,28 +47,46 @@ public class ClassSelector : MonoBehaviour
 
     public void UpdateClass()
     {
-        var name = LobbyManager.instance.currentName;
-        UpdateClassServerRPC(name,currentType);
+        UpdateClassServerRPC(LobbyManager.instance.currentName,currentType);
+        LobbyManager.instance.UpdateNameText(); 
+        
     }
     [ServerRpc(RequireOwnership = false)]
-    private void UpdateClassServerRPC(string nameToUpdate, ClassType type,ServerRpcParams rpcParams = default)
+    private void UpdateClassServerRPC(string nameToUpdate,ClassType type,ServerRpcParams rpcParams = default)
     {
-        ulong senderID = rpcParams.Receive.SenderClientId;
-        players.playerMap[nameToUpdate].currentClass = type;
-        UpdateClassClientRPC(nameToUpdate, type,senderID);
+        if (!players.HasPlayer(nameToUpdate))
+        {
+            Debug.LogWarning($"SERVER - Cannot update {nameToUpdate}, player not found");
+            return;
+        } 
+        // Update server data
+        var data = players.playerMap[nameToUpdate];
+        data.currentClass = type;
+        players.playerMap[nameToUpdate] = data;
+
+        Debug.Log($"SERVER - Updating {nameToUpdate} with class: {type.ToString()}");
+
+        // Update host UI immediately
+        if (IsHost)
+        {
+            LobbyManager.instance.UpdatePlayerList();
+            if (nameToUpdate == LobbyManager.instance.currentName)
+                LobbyManager.instance.UpdateNameText();
+        } 
+        UpdateClassClientRPC(nameToUpdate, type); 
+      
     }
 
     [ClientRpc]
-    private void UpdateClassClientRPC(string nameToUpdate, ClassType type, ulong id)
+    private void UpdateClassClientRPC(string nameToUpdate, ClassType type)
     {
-        players.playerMap[nameToUpdate].currentClass = type;
-        
-
-        if (NetworkManager.Singleton.LocalClientId == id)
+        if (!players.HasPlayer(nameToUpdate))
         {
-            LobbyManager.instance.UpdateNameText(); 
+            Debug.LogWarning($"Missing player '{nameToUpdate}'");
+            return; 
         }
-        
+        players.playerMap[nameToUpdate].currentClass = type;
+        Debug.Log($"CLIENT - Updating {nameToUpdate} with class: {type.ToString()}");
         
         LobbyManager.instance.UpdatePlayerList();
     }

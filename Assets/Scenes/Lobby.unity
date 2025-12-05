@@ -310,19 +310,27 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7588591864769646038, guid: e78e02bbbcc73de488b50ff1180fb9ab, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 415550729}
   m_SourcePrefab: {fileID: 100100000, guid: e78e02bbbcc73de488b50ff1180fb9ab, type: 3}
 --- !u!114 &130719992 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5616926949945314328, guid: e78e02bbbcc73de488b50ff1180fb9ab, type: 3}
   m_PrefabInstance: {fileID: 130719991}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 130719993}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2cfecd35757116a488006ecba6c3efa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!1 &130719993 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7588591864769646038, guid: e78e02bbbcc73de488b50ff1180fb9ab, type: 3}
+  m_PrefabInstance: {fileID: 130719991}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &322577651
 GameObject:
   m_ObjectHideFlags: 0
@@ -357,6 +365,7 @@ MonoBehaviour:
   currentName: John
   nameText: {fileID: 1228872009}
   playerListText: {fileID: 1530965201}
+  playerCountText: {fileID: 702890419}
   nameInput: {fileID: 489673087}
   readyCount:
     m_InternalValue: 0
@@ -405,6 +414,31 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 168985003534457100, guid: e78e02bbbcc73de488b50ff1180fb9ab, type: 3}
   m_PrefabInstance: {fileID: 130719991}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &415550729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130719993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 1038813398
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &489673087 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6537251772126675941, guid: e78e02bbbcc73de488b50ff1180fb9ab, type: 3}
@@ -620,7 +654,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -143.0739, w: 0}
+  m_margin: {x: 0, y: 0, z: -252.57489, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

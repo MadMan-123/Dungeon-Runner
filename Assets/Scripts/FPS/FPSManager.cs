@@ -8,15 +8,14 @@ using UnityEngine.SceneManagement;
 
 public class FPSManager : NetworkManager
 {
-    
     public void Startlobby()
     {
         //host and load the Main scene
         StartHost();
         
         //load next scene 
-        
         LoadLobby();
+        
     }
 
     public void JoinLobby()

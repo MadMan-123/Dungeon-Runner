@@ -11,6 +11,7 @@ public class LobbyManager : NetworkBehaviour
     public string currentName = "John";
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI playerListText;
+    public TextMeshProUGUI playerCountText;
     public TMP_InputField nameInput;
     public NetworkVariable<int> readyCount;
 
@@ -40,8 +41,11 @@ public class LobbyManager : NetworkBehaviour
     {
         nameText.text = $"You are: {currentName} a {ClassSelector.instance.currentType.ToString()}";
     }
-    
 
+    public void UpdatePlayerCountText()
+    {
+        playerCountText.text = $"Connected Players: {players.currentPlayers.Value}";
+    }
     
     private void GetName(string input)
     {
@@ -90,10 +94,9 @@ public class LobbyManager : NetworkBehaviour
        
         //add data with a new name 
         players.AddPlayer(newName, data);
-        //compensate for changing the data
-        players.currentPlayers.Value--;
-       
+        players.currentPlayers.Value--; 
         UpdatePlayerList();
+        UpdatePlayerCountText();
     }
 
     public void UpdatePlayerList()
@@ -102,10 +105,10 @@ public class LobbyManager : NetworkBehaviour
         var output = "";
 
         playerListText.text = "";
-        foreach (var key in players.playerMap.Keys)
+        foreach (var kv in players.playerMap)
         {
-            var data = players.GetPlayer(key);
-            output += $"{key}:{data.currentClass.ToString()}\n";
+            var data = players.GetPlayer(kv.Key);
+            output += $"{kv.Key}:{data.currentClass.ToString()}\n";
         }
 
         playerListText.text = output;

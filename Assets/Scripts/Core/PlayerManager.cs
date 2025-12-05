@@ -51,7 +51,7 @@ public class PlayerManager : NetworkBehaviour
         {
             Debug.Log($"Added player: {playerName} to map");
             currentPlayers.Value++;
-            
+
             return true;
         }
         //debug that we cant add
@@ -61,6 +61,16 @@ public class PlayerManager : NetworkBehaviour
 
     }
 
+    /*public void UpdatePlayerClass(string playerName, ClassSelector.ClassType newClass)
+    {
+        if (!playerMap.TryGetValue(playerName, out var data))
+        {
+            Debug.LogWarning($"Cannot update class — player '{playerName}' not found.");
+            return;
+        }
+
+        data.currentClass = newClass;
+    }*/
 
     
     public bool RemovePlayer(string playerName)
@@ -72,6 +82,7 @@ public class PlayerManager : NetworkBehaviour
         }
         Debug.Log($"Removing player: {playerName} from map");
         playerMap.Remove(playerName);
+
         return true;
     }
 
@@ -100,6 +111,19 @@ public class PlayerManager : NetworkBehaviour
         Debug.LogWarning($"No player with id {senderID} found");
         return null;
     }
+    
+    public string GetNameByData(PlayerDataDescriptor data)
+    {
+        return playerMap
+            .FirstOrDefault(kvp => kvp.Value.id == data.id)
+            .Key;
+    }
 
-   
+
+    public string GetNameById(ulong sender)
+    {
+        return playerMap.FirstOrDefault(kvp => kvp.Value.id == sender).Key;
+    }
+
+
 }
