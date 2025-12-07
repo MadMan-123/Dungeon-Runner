@@ -16,12 +16,12 @@ public class Weapon : NetworkBehaviour
         base.OnNetworkSpawn();
     }
 
-
+    
 
     private void Update()
     {
         if (!IsOwner) return;
-
+        
         Vector3 mousePos = cache.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0f; // ensure 2D plane
         Vector3 direction = (mousePos - transform.position).normalized;

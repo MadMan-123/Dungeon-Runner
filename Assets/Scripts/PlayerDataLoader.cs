@@ -30,14 +30,11 @@ public class PlayerDataLoader : NetworkBehaviour
 
         //ensures we definitely have the name as we can change and sync names using the prefabs 
         StartCoroutine(Delay(type));
-
-        //sync with all clients 
-
     }
 
     private IEnumerator Delay(ClassSelector.ClassType type)
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.15f);
           var model = ClassMetaData.instance.GetModelByClass(type);
           if (!model) yield return null;
                 
@@ -52,7 +49,12 @@ public class PlayerDataLoader : NetworkBehaviour
                 };
         
                 enabledModel.SetActive(true);
-        
                 currentBody.SetActive(false);
+                
+                if (TryGetComponent(out WeaponHandler handler))
+                {
+                    handler.type = type;
+                }
+
     }
 }
