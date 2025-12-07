@@ -1,15 +1,20 @@
+using System;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerDataLoader : NetworkBehaviour
 {
-    [SerializeField] private MeshRenderer renderer;
+    public GameObject currentBody;
 
-
-
+    [Header("Knight")] public GameObject knightModel;
+    [Header("Ranger")] public GameObject rangerModel;
+    [Header("Wizard")] public GameObject wizardModel;
     public void LoadClassData(ClassSelector.ClassType type)
     {
-        var bodyMat = renderer.material;
+        //changing the colour 
+        /*
+         var bodyMat = renderer.material;
         var colour = type switch
         {
             ClassSelector.ClassType.NoOne => Color.ghostWhite,
@@ -17,7 +22,37 @@ public class PlayerDataLoader : NetworkBehaviour
             ClassSelector.ClassType.Ranger => Color.darkGreen,
             ClassSelector.ClassType.Wizard => Color.purple
         };
+        
+
         if (bodyMat)
             bodyMat.color = colour;
+        */
+
+        //ensures we definitely have the name as we can change and sync names using the prefabs 
+        StartCoroutine(Delay(type));
+
+        //sync with all clients 
+
+    }
+
+    private IEnumerator Delay(ClassSelector.ClassType type)
+    {
+        yield return new WaitForSeconds(0.5f);
+          var model = ClassMetaData.instance.GetModelByClass(type);
+          if (!model) yield return null;
+                
+                var name = model.name;
+        
+                var enabledModel = name switch
+                {
+                    "wizard" => wizardModel,
+                    "ranger" => rangerModel,
+                    "knight" => knightModel,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+        
+                enabledModel.SetActive(true);
+        
+                currentBody.SetActive(false);
     }
 }

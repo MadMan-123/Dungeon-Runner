@@ -48,7 +48,6 @@ namespace Core
             obj.gameObject.SetActive(false);
             obj.tag = "Pooled";
     
-            // Don't spawn here anymore - let constructor do it
             objects.Add(obj);
             return obj;
         }

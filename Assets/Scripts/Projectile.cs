@@ -38,12 +38,12 @@ public class Projectile : NetworkBehaviour
 
         if (rb == null) rb = GetComponent<Rigidbody2D>();
     
-        // CRITICAL: Set velocity to zero first, then position, then apply new velocity
+        //Set velocity to zero first, then position, then apply new velocity
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
         transform.position = pos;
     
-        // Apply velocity in next physics frame to ensure position is set first
+        //Apply velocity in next physics frame to ensure position is set first
         rb.linearVelocity = velocity;
     
         Debug.Log($"Projectile initialized at {pos} with velocity {vel}, rb.velocity is now {rb.linearVelocity}");

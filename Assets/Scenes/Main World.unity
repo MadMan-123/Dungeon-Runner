@@ -150,6 +150,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1283333543}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &439820764
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 439820766}
+  - component: {fileID: 439820765}
+  m_Layer: 0
+  m_Name: '[CLASS META DATA]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &439820765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439820764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c49b76e9783b3d8428d6cfe55db59834, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ClassMetaData
+  knightModel: {fileID: 919132149155446097, guid: 15b40cd4595af47429cbda90c31a69ba, type: 3}
+  rangerModel: {fileID: 919132149155446097, guid: fc7dd4ccfa7313547a77eb0ab3f84879, type: 3}
+  wizardModel: {fileID: 919132149155446097, guid: 68310cc9fb7aa544ab2336d577591e48, type: 3}
+--- !u!4 &439820766
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439820764}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -8.25718, y: -5.78003, z: -8.25718}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &491678522
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,3 +651,4 @@ SceneRoots:
   - {fileID: 491678524}
   - {fileID: 1173169986}
   - {fileID: 1283333543}
+  - {fileID: 439820766}
