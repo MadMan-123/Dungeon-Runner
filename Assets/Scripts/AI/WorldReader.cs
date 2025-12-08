@@ -21,6 +21,8 @@ public class WorldReader : NetworkBehaviour
     private List<Vector3> nearbyTargetsPos = new(10);
     private List<Vector3> nearbyAllyPos = new(25);
 
+    public NetworkObject ClosestTarget;
+    public float closestDistance = 0;
     private void Update()
     {
         //do a circle cast
@@ -33,6 +35,8 @@ public class WorldReader : NetworkBehaviour
         nearbyAllies.Clear();
         nearbyTargetsPos.Clear();
         nearbyAllyPos.Clear();
+        closestDistance = float.PositiveInfinity;
+        ClosestTarget = null;
  
         
         var allyCount = 0;
@@ -61,8 +65,16 @@ public class WorldReader : NetworkBehaviour
                     //add the position to the list
                     nearbyTargetsPos.Add(position);
                     //add the distance to the avg distance
-                    avgDistance += (position - transform.position).magnitude;
-                
+                    var distance = (position - transform.position).magnitude;
+                    avgDistance += distance;
+
+                    if (distance < closestDistance)
+                    {
+                        ClosestTarget = target.NetworkObject;
+                        closestDistance = distance;
+                    }
+
+                    continue;
             }
             if(target.TryGetComponent(out Agent agent))
             {
@@ -72,7 +84,10 @@ public class WorldReader : NetworkBehaviour
                 allyCount++;
                 var pos = target.transform.position;
                 nearbyAllyPos.Add(pos);
+                continue;
             }
+            
+            
         }
         
         

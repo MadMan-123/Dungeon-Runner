@@ -384,6 +384,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   ShowTopMostFoldoutHeaderGroup: 1
+  reader: {fileID: 6191155940178184563}
+  MaxCurrentSpeed: 5
 --- !u!195 &5328575614872329732
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -441,11 +443,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d824f3f494ae77f4592bf957f465024a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldReader
+  ShowTopMostFoldoutHeaderGroup: 1
   nearbyTargets: []
   nearbyAllies: []
   radius: 15
   FOV: 90
+  Count: 0
   avgDistance: 0
+  ClosestTarget: {fileID: 0}
+  closestDistance: 0
 --- !u!114 &7648005538143534954
 MonoBehaviour:
   m_ObjectHideFlags: 0
