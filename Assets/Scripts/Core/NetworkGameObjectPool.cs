@@ -66,7 +66,7 @@ namespace Core
                 // if (!obj.IsSpawned)
                 //     obj.Spawn(true);
                 
-                obj.transform.SetParent(pTransform); 
+               
                 return obj;
             }
 
@@ -83,7 +83,7 @@ namespace Core
             return null;
         }
 
-        // Return object to pool safely
+        // Return object to data safely
         public void ReturnObject(NetworkObject obj)
         {
             if (obj == null || availableObjects.Contains(obj))

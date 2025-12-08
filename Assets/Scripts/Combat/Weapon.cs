@@ -44,17 +44,17 @@ public class Weapon : NetworkBehaviour
         var pool = PoolManager.Instance.GetPool("Bullets");
         if (pool == null)
         {
-            Debug.LogError("Bullet pool not found!");
+            Debug.LogError("Bullet data not found!");
             return;
         }
     
-        var bullet = pool.GetObject();
+        var bullet = pool.data.GetObject();
         if (bullet == null) return;
 
         if (bullet.TryGetComponent(out Projectile proj))
         {
             
-            //proj.Init(pos, dir * speed, pool);
+            //proj.Init(pos, dir * speed, data);
         }
     }
 }

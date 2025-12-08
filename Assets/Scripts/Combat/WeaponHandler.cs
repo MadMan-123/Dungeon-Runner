@@ -13,7 +13,6 @@ public class WeaponHandler : NetworkBehaviour
     public bool canFire = false;
     public override void OnNetworkSpawn()
     {
-
         base.OnNetworkSpawn();
     }
     
@@ -99,20 +98,20 @@ public class WeaponHandler : NetworkBehaviour
     {
         if (!poolManager)
         {
-            Debug.LogError("Cannot get the pool manager instance");
+            Debug.LogError("Cannot get the data manager Instance");
             return;
         }
         
         var key = type.ToString();
 
         var pool = poolManager.GetPool(key);
-        if (pool == null)
+        if (pool.data == null)
         {
             Debug.Log($"Pool {key}, cannot be found");
             return;
         }
 
-        var projectile = pool.GetObject();
+        var projectile = pool.data.GetObject();
         if(projectile == null) return;
 
   
@@ -122,12 +121,12 @@ public class WeaponHandler : NetworkBehaviour
 
         if (projectile.TryGetComponent(out Projectile component))
         {
-            component.Init(damage, pos, dir * speed, pool);
+            component.Init(damage, pos, dir * speed, pool.data);
         }
 
         if (!projectile.IsSpawned)
             projectile.Spawn(true);
-
+        projectile.transform.SetParent(pool.parent.transform); 
 
     }
 

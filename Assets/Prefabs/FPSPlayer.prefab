@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 6701298729812773781}
   - component: {fileID: 5371269405604049853}
   - component: {fileID: 4733197976709229765}
+  - component: {fileID: 2143458647467387908}
   m_Layer: 0
   m_Name: FPSPlayer
   m_TagString: Untagged
@@ -53,7 +54,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2430293318
+  GlobalObjectIdHash: 460646662
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -228,6 +229,20 @@ MonoBehaviour:
   onDeath:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2143458647467387908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2687996144027486642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9143c36620145924fa707476606dc5ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AITarget
+  ShowTopMostFoldoutHeaderGroup: 1
+  type: 1
 --- !u!1 &3883716326387575721
 GameObject:
   m_ObjectHideFlags: 0
