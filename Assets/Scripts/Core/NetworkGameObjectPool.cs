@@ -31,7 +31,7 @@ namespace Core
             for (int i = 0; i < initialSize; i++)
             {
                 var obj = CreateObjectInPool(prefab);
-                obj.Spawn(true); // Spawn immediately so OnNetworkSpawn fires
+                // obj.Spawn(true); 
 
                 obj.transform.SetParent(pTransform); 
                 obj.gameObject.SetActive(false); // But keep inactive 
@@ -61,8 +61,12 @@ namespace Core
                 var obj = enumerator.Current;
                 availableObjects.Remove(obj);
 
-                obj.transform.SetParent(pTransform); // Ensure still parented
-                obj.gameObject.SetActive(true);
+                obj.gameObject.SetActive(true); 
+                
+                // if (!obj.IsSpawned)
+                //     obj.Spawn(true);
+                
+                obj.transform.SetParent(pTransform); 
                 return obj;
             }
 
@@ -70,9 +74,9 @@ namespace Core
             {
                 Debug.LogWarning("Pool exhausted! Creating dynamic object");
                 var newObj = CreateObjectInPool(prefab);
-                newObj.Spawn(true);
-                newObj.transform.SetParent(pTransform); // Parent the dynamic one too
+                // newObj.Spawn(true);
                 newObj.gameObject.SetActive(true);
+                newObj.transform.SetParent(pTransform); // Parent the dynamic one too
                 return newObj;
             }
 
@@ -86,7 +90,7 @@ namespace Core
                 return;
 
             if (obj.IsSpawned)
-                obj.Despawn();
+                obj.Despawn(false);
 
             obj.gameObject.SetActive(false);
             availableObjects.Add(obj);

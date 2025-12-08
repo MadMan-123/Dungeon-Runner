@@ -7,26 +7,24 @@ public class PoolManager : NetworkBehaviour
     public static PoolManager Instance;
     private Dictionary<string, Core.NetworkGameObjectPool> pools = new();
     
-    [SerializeField] private NetworkObject bulletPrefab;
-    
+    [SerializeField] private NetworkObject fireballPrefab;
+     
     private void Awake() 
     {
         Instance = this;
-        Debug.Log("PoolManager Awake");
     }
 
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            Debug.Log("PoolManager creating bullet pool");
-            // Pass THIS NetworkObject's transform as parent (since PoolManager is a NetworkBehaviour)
-            RegisterPool("Bullets", bulletPrefab, 100);
+            RegisterPool(nameof(Projectile.ProjectileType.FireBall), fireballPrefab);
+            Debug.Log($"Added {nameof(Projectile.ProjectileType.FireBall)}");
         }
         base.OnNetworkSpawn();
     }
 
-    public void RegisterPool(string key, NetworkObject prefab, int size)
+    public void RegisterPool(string key, NetworkObject prefab, int size = 100)
     {
         if (!IsServer) return;
         

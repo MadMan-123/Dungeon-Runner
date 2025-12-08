@@ -6,6 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*
 public class ChatManager : NetworkBehaviour
 {
     #region Chat
@@ -207,3 +208,4 @@ public class ChatManager : NetworkBehaviour
     }
     #endregion
 }
+*/
