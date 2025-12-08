@@ -26,6 +26,18 @@ public class Agent : NetworkBehaviour
         MaxBehaviours
     }
 
+    public enum AgentState
+    {
+        Wander,
+        Chase,
+        Attack,
+        Flee
+    }
+    [SerializeField] private float detectRadius = 10f;
+    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private float lowHealthThreshold = 15f;
+
+    private AgentState currentState = AgentState.Wander;
 
     public WorldReader reader;
     public Behaviour[] CurrentBehaviours ;
@@ -36,8 +48,14 @@ public class Agent : NetworkBehaviour
     private float wanderAngle = 0;
     private Vector3 steeringVelocity = new();
     private Vector3 currentVelocity = new();
+    
+    [Header("AI Data")]
     private float circleDistance = 5;
     private float circleRadius = 4;
+    private float rotationSpeed = 3;
+    private float lastAttackTime;
+    private float attackCooldown = 1f;
+    private float attackDamage = 10f;
 
     private void Start()
     {
@@ -75,6 +93,8 @@ public class Agent : NetworkBehaviour
         navAgent.updateRotation = false;
 
     }
+    
+    
 
     public void Init(Vector3 position, Quaternion rotation, Core.NetworkGameObjectPool pool)
     {
@@ -83,6 +103,10 @@ public class Agent : NetworkBehaviour
             Debug.LogError("No navmesh agent found");
         }
 
+        if (!IsServer)
+        {
+            navAgent.enabled = false;
+        }
         if (!TryGetComponent(out health))
         {
             
@@ -109,22 +133,30 @@ public class Agent : NetworkBehaviour
     } 
     private void Update()
     {
+        if(!IsServer)
+            return;
+        EvaluateState();
+        ApplyStateWeights();
+
         CooperativeArbitration();
 
+        if (currentState == AgentState.Attack)
+        {
+            PerformAttack();
+        }
         navAgent.Move(steeringVelocity * Time.deltaTime);
-        // Only rotate if we have meaningful steering
+
         if (steeringVelocity.sqrMagnitude > 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(steeringVelocity, Vector3.up);
-            const float rotationSpeed = 4;
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
                 targetRot,
                 rotationSpeed * Time.deltaTime
             );
         }
-
     }
+
 
     public void OnDeath()
     {
@@ -183,7 +215,95 @@ public class Agent : NetworkBehaviour
     } 
     
     #endregion
+    private void PerformAttack()
+    {
+        if (!IsServer) return;
 
+        var target = reader.ClosestTarget;
+        if (!target) return;
+
+        if (!target.TryGetComponent(out Health targetHealth)) return;
+        if (targetHealth.health.Value <= 0) return;
+
+        // Cooldown
+        if (Time.time - lastAttackTime < attackCooldown)
+            return;
+
+        lastAttackTime = Time.time;
+
+        
+        targetHealth -= (int)attackDamage;
+    }
+
+    private void EvaluateState()
+    {
+        var target = reader.ClosestTarget;
+        float hp = health.health.Value;
+
+        bool hasTarget = target != null;
+        float dist = reader.closestDistance;
+
+        if (hp <= lowHealthThreshold)
+        {
+            currentState = AgentState.Flee;
+            return;
+        }
+
+        switch (currentState)
+        {
+            case AgentState.Wander:
+                if (hasTarget && dist <= detectRadius)
+                    currentState = AgentState.Chase;
+                break;
+
+            case AgentState.Chase:
+                if (!hasTarget)
+                    currentState = AgentState.Wander;
+                else if (dist <= attackRange)
+                    currentState = AgentState.Attack;
+                break;
+
+            case AgentState.Attack:
+                if (!hasTarget)
+                    currentState = AgentState.Wander;
+                else if (dist > attackRange)
+                    currentState = AgentState.Chase;
+                break;
+
+            case AgentState.Flee:
+                if (hp > lowHealthThreshold * 1.5f) // recovered
+                    currentState = AgentState.Wander;
+                break;
+        }
+    }
+    private void ApplyStateWeights()
+    {
+        // Reset all
+        for (int i = 0; i < CurrentBehaviours.Length; i++)
+            CurrentBehaviours[i].weight = 0;
+
+        switch (currentState)
+        {
+            case AgentState.Wander:
+                CurrentBehaviours[(int)Behaviours.Wander].weight = 1;
+                CurrentBehaviours[(int)Behaviours.ObstacleAvoid].weight = 0.5f;
+                break;
+
+            case AgentState.Chase:
+                CurrentBehaviours[(int)Behaviours.Seek].weight = 1;
+                CurrentBehaviours[(int)Behaviours.ObstacleAvoid].weight = 0.7f;
+                break;
+
+            case AgentState.Attack:
+                CurrentBehaviours[(int)Behaviours.Arrival].weight = 1;
+                break;
+
+            case AgentState.Flee:
+                CurrentBehaviours[(int)Behaviours.Flee].weight = 1;
+                CurrentBehaviours[(int)Behaviours.ObstacleAvoid].weight = 0.7f;
+                break;
+        }
+    }
 
     private void OnDrawGizmos()
     {   
