@@ -17,7 +17,7 @@ public class WorldReader : NetworkBehaviour
     public float avgDistance = 0f;
     public LayerMask detectionMask = -1; 
 
-    public Collider[] results = new Collider[64]; // non-alloc buffer
+    public Collider[] results = new Collider[32]; 
     private List<Vector3> nearbyTargetsPos = new(10);
     private List<Vector3> nearbyAllyPos = new(25);
 
@@ -49,7 +49,6 @@ public class WorldReader : NetworkBehaviour
         Count = size; 
         //get all the agents
         
-        print($"{Count}");
         for (int i = 0; i < Count; i++)
         {
             

@@ -11,6 +11,8 @@ public class RoomManager : NetworkBehaviour
 
     public Dictionary<string, List<Room>> rooms = new();
     public Room MainHub;
+    [Header("Boss Room Settings")]
+    [SerializeField] public Room bossRoomPrefab;
 
     [Header("Room Generation Settings")]
     [SerializeField] private int numberOfRooms = 10;
@@ -94,7 +96,7 @@ public class RoomManager : NetworkBehaviour
             return;
         }
 
-        // Clear any existing rooms (but not MainHub)
+        // Clear any existing rooms 
         ClearRooms();
 
         // Start from the already-spawned MainHub
@@ -120,9 +122,20 @@ public class RoomManager : NetworkBehaviour
         }
 
         Debug.Log($"Generated room chain with {spawnedRooms.Count} rooms connected to MainHub");
+
+        // Spawn the boss room at the end
+        if (bossRoomPrefab != null)
+        {
+            Debug.Log("Spawning Boss Room at end of chain");
+            SpawnAndConnectRoom(bossRoomPrefab);
+        }
+        else
+        {
+            Debug.LogWarning("Boss Room Prefab not assigned!");
+        }
     }
 
-    /// Spawns a room from the pool and connects it to the last room
+    //Spawns a room from the pool and connects it to the last room
     private void SpawnAndConnectRoom(Room roomPrefab)
     {
         if (lastSpawnedRoom == null)

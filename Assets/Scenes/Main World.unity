@@ -1477,88 +1477,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1375653604}
   m_CullTransparentMesh: 1
---- !u!1 &1377161739
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1377161742}
-  - component: {fileID: 1377161740}
-  - component: {fileID: 1377161741}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1377161740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377161739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2037082006
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 0
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
---- !u!114 &1377161741
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377161739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d824f3f494ae77f4592bf957f465024a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WorldReader
-  ShowTopMostFoldoutHeaderGroup: 1
-  nearbyTargets: []
-  nearbyAllies: []
-  radius: 15
-  FOV: 90
-  Count: 0
-  avgDistance: 0
-  detectionMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  ClosestTarget: {fileID: 0}
-  closestDistance: 0
---- !u!4 &1377161742
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377161739}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.74934, y: 5.35092, z: -45.10014}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1529404558
 GameObject:
   m_ObjectHideFlags: 0
@@ -1730,6 +1648,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   ShowTopMostFoldoutHeaderGroup: 1
   MainHub: {fileID: 1774014874}
+  bossRoomPrefab: {fileID: 8037793787086870329, guid: db961dad65ab7bf40933fd737eb4f3fb, type: 3}
   numberOfRooms: 10
   generateOnSpawn: 1
 --- !u!4 &1825728654
@@ -1894,4 +1813,3 @@ SceneRoots:
   - {fileID: 8716381573485334018}
   - {fileID: 1825728654}
   - {fileID: 1529404561}
-  - {fileID: 1377161742}

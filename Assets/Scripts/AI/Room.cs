@@ -8,6 +8,7 @@ public class Room : NetworkBehaviour
         MainHub,
         Corridor,
         Room,
+        BossRoom,
         MaxRoom
     }
     
