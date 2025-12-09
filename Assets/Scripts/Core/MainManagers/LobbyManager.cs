@@ -23,24 +23,56 @@ public class LobbyManager : NetworkBehaviour
 
     private bool isHosting = false;
      
-    private void Start()
+    private IEnumerator Start()
     {
-        nameInput.onSubmit.AddListener(GetName); 
-        UpdateNameText();
+        // Wait a frame so PlayerManager.instance is ready after scene load
+        yield return null;
+
         players = PlayerManager.instance;
+       
+        // Recover correct name from PlayerManager
+        string realName = FindMyRealName();
+        if (!string.IsNullOrEmpty(realName))
+        {
+            currentName = realName;
+        }
+        else
+        {
+            Debug.LogError("Failed to resync name, using fallback.");
+        }
+
+        SyncLobbyUI();
     }
-    
-     private void Awake()
-     {
-         if (!instance)
-         {
-             instance = this;
-         }
-         else
-         {
-             Destroy(instance);
-         }
-     }
+
+    public void SyncLobbyUI()
+    {
+        if (players == null)
+        {
+            players = PlayerManager.instance;
+            if (players == null)
+            {
+                Debug.LogError("LobbyManager could not find PlayerManager instance!");
+                return;
+            }
+        }
+
+        UpdateNameText();
+        UpdatePlayerCountText();
+        UpdateReadyCountText(readyCount.Value);
+        UpdatePlayerList();
+    }
+ 
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+    }
+
     public void UpdateNameText()
     {
         nameText.text = $"You are: {currentName} a {ClassSelector.instance.currentType.ToString()}";
@@ -160,6 +192,19 @@ public class LobbyManager : NetworkBehaviour
         StartCoroutine(delay());
     }
 
+    private string FindMyRealName()
+    {
+        ulong local = NetworkManager.Singleton.LocalClientId;
+
+        foreach (var kv in players.playerMap)
+        {
+            if (kv.Value.id == local)
+                return kv.Key;
+        }
+
+        Debug.LogError("LobbyManager: Could not find local player's name in PlayerManager!");
+        return null;
+    }
 
     public void StartGame()
     {
