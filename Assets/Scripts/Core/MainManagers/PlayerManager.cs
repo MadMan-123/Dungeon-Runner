@@ -36,7 +36,7 @@ public class PlayerManager : NetworkBehaviour
     {
         if (instance == null)
         {
-            // First ever creation (lobby start)
+            // First ever creation 
             instance = this;
             DontDestroyOnLoad(gameObject);
             isPersistentRuntimeInstance = true;

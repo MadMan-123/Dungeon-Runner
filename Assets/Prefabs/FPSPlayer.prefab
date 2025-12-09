@@ -1556,7 +1556,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 777005344
+  GlobalObjectIdHash: 680368705
   InScenePlacedSourceGlobalObjectIdHash: 2430293318
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1690,6 +1690,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   currentBody: {fileID: 5883792160792288347}
   currentCamera: {fileID: 5500068131028489926}
+  playerName: 
   knightModel: {fileID: 8867237687463746014}
   rangerModel: {fileID: 1589587008371179602}
   wizardModel: {fileID: 2635995380650605634}
@@ -1742,7 +1743,19 @@ MonoBehaviour:
         m_CallState: 2
   onDeath:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6411527438684072008}
+        m_TargetAssemblyTypeName: PlayerDataLoader, Assembly-CSharp
+        m_MethodName: HandleDeath
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2360410711065100796
 MonoBehaviour:
   m_ObjectHideFlags: 0

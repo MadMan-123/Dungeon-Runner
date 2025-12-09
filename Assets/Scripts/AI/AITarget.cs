@@ -8,6 +8,8 @@ using Random = UnityEngine.Random;
 public class AITarget : NetworkBehaviour 
 {
     public Type type;
+
+    //Basic Descriptor of a target the AI will look for
     public int GetPriority() => type switch
     {
         Type.Enemy => 0,

@@ -23,7 +23,6 @@ public class Health : NetworkBehaviour
 
     void HandleDamage(int oldVal ,int newVal)
     {
-        //this refers to this Health class meaning it will return the health.Value
         if (newVal <= 0 && oldVal > 0)
         {
             onDeath?.Invoke();
@@ -36,6 +35,8 @@ public class Health : NetworkBehaviour
         }
     }
 
+    
+    // Operators ment to make using health easier
     public static Health operator ++(Health h)
     {
         if (!h || !h.IsSpawned || !h.IsServer)

@@ -16,6 +16,7 @@ public class Projectile : NetworkBehaviour
     private Vector3 velocity;
     public int damage = 10;
     private Rigidbody rb;
+    private NetworkObject source;
     public enum ProjectileType
     {
         FireBall,
@@ -36,24 +37,24 @@ public class Projectile : NetworkBehaviour
         }
     }
   
-    public void Init(int newDamage,Vector3 pos, Vector3 vel, Core.NetworkGameObjectPool poolRef)
+    public void Init(NetworkObject firedSource,int newDamage,Vector3 pos, Vector3 vel, Core.NetworkGameObjectPool poolRef)
     {
+        source = firedSource;
         pool = poolRef;
         lifeTimer = totalTime;
         velocity = vel;
         damage = newDamage;
         if (rb == null) rb = GetComponent<Rigidbody>();
         rb.isKinematic = false;
-        //Set velocity to zero first, then position, then apply new velocity
+        // Set velocity to zero first
         rb.linearVelocity = Vector3.zero;
-        //Apply velocity  next to ensure position is set first
+        // Apply velocity next to ensure position is set first
         rb.linearVelocity = velocity;
-        //Debug.Log($"Projectile initialized at {pos} with velocity {vel}, rb.velocity is now {rb.linearVelocity}");
     }
 
     private void Update()
     {
-        
+       // Timer to despawn projectile 
         if(!IsServer) return;
             lifeTimer -= Time.deltaTime;
             if (lifeTimer <= 0f)
@@ -64,6 +65,8 @@ public class Projectile : NetworkBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if(collision.gameObject == source.gameObject)
+            return;
         //if(!IsServer) return;
         if (collision.gameObject.TryGetComponent(out Health health))
         {

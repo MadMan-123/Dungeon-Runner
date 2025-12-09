@@ -5,10 +5,12 @@ using UnityEngine;
 
 public class ClassSelector : NetworkBehaviour 
 {
-    
+    //Local class type
     public ClassType currentType = ClassType.NoOne;
     public static ClassSelector instance;
     private PlayerManager players;
+    
+    //There are 3 classed but we could add more later so thats why there is a MaxClass
     public enum ClassType
     {
         NoOne = -1,
@@ -18,7 +20,7 @@ public class ClassSelector : NetworkBehaviour
         MaxClass
     }
 
-
+    //Singleton
     private void Awake()
     {
         if (!instance)
@@ -31,12 +33,13 @@ public class ClassSelector : NetworkBehaviour
         }
     }
 
+    // Get singleton from playermanager
     private void Start()
     {
         players = PlayerManager.instance;
     }
-
-
+    
+    // Set the type of class
     public void SetType(int index)
     {
         if(index is > (int)ClassType.MaxClass or < 0)
@@ -45,6 +48,7 @@ public class ClassSelector : NetworkBehaviour
         currentType = (ClassType)index;
     }
 
+    // Update the class with the player manager
     public void UpdateClass()
     {
         UpdateClassServerRPC(LobbyManager.instance.currentName,currentType);
@@ -85,6 +89,8 @@ public class ClassSelector : NetworkBehaviour
             Debug.LogWarning($"Missing player '{nameToUpdate}'");
             return; 
         }
+     
+        // Update data on client
         players.playerMap[nameToUpdate].currentClass = type;
         Debug.Log($"CLIENT - Updating {nameToUpdate} with class: {type.ToString()}");
         

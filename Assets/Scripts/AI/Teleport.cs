@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Teleport : MonoBehaviour
 {
+    //Simple teleport script to make sure falling players get caught 
     public Transform teleportSpot;
     private void OnTriggerEnter(Collider other)
     {

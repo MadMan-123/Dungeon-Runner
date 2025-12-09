@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Linq;
+using Core;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,9 +9,15 @@ public class PlayerDataLoader : NetworkBehaviour
 {
     public GameObject currentBody;
     public Camera currentCamera;
+    public string playerName;
+    
+    // Different class models
+ 
     [Header("Knight")] public GameObject knightModel;
     [Header("Ranger")] public GameObject rangerModel;
     [Header("Wizard")] public GameObject wizardModel;
+
+    private PlayerManager players;
     public void LoadClassData(ClassSelector.ClassType type)
     {
         //changing the colour 
@@ -34,12 +42,16 @@ public class PlayerDataLoader : NetworkBehaviour
 
     private IEnumerator Delay(ClassSelector.ClassType type)
     {
+        // Small delay so everything is loaded
+
         yield return new WaitForSeconds(0.15f);
           var model = ClassMetaData.instance.GetModelByClass(type);
           if (!model) yield break;
                 
+          // Grab the correct model info
                 var name = model.name;
-        
+
+                // Pick which model to turn on
                 var enabledModel = name switch
                 {
                     "wizard" => wizardModel,
@@ -47,10 +59,12 @@ public class PlayerDataLoader : NetworkBehaviour
                     "knight" => knightModel,
                     _ => throw new ArgumentOutOfRangeException()
                 };
-        
+
+                // Pick which model to turn on
                 enabledModel.SetActive(true);
                 currentBody.SetActive(false);
-                
+                // If this player has a weapon handler, update it
+ 
                 if (TryGetComponent(out WeaponHandler handler))
                 {
                     handler.type = type;
@@ -61,5 +75,49 @@ public class PlayerDataLoader : NetworkBehaviour
 
        
 
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RemovePlayerServerRPC(string playerName, ServerRpcParams rpcParams = default)
+    {
+        if (players == null) players = PlayerManager.instance;
+        // If they aren't in the list, stop
+
+        if (!players.HasPlayer(playerName))
+            return;
+
+        // Remove them on the server
+        players.RemovePlayer(playerName);
+        players.currentPlayers.Value--;
+
+        // Tell every client to update too
+        var clientParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = NetworkManager.Singleton.ConnectedClientsIds.ToArray()
+            }
+        };
+        ApplyRemoveClientRPC(playerName, clientParams);
+    }
+    [ClientRpc]
+    private void ApplyRemoveClientRPC(string playerName, ClientRpcParams clientRpcParams = default)
+    {
+        if (players == null) players = PlayerManager.instance;
+        // Remove them locally if they exist
+
+        if (players.HasPlayer(playerName))
+            players.RemovePlayer(playerName);
+
+    }
+
+
+    public void HandleDeath()
+    {
+        RemovePlayerServerRPC(playerName);
+        NetworkManager.Singleton.Shutdown();
+        Destroy(players.gameObject);
+        Loader.Load(Loader.Scene.MainMenu);
+        
     }
 }

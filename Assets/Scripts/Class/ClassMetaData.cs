@@ -4,7 +4,7 @@ using UnityEngine;
 public class ClassMetaData : MonoBehaviour
 {
     public static ClassMetaData instance;
-
+    //Describes what class has what model
     [Header("Class Data")] 
     [Header("Knight")] public GameObject knightModel;
     [Header("Ranger")] public GameObject rangerModel;

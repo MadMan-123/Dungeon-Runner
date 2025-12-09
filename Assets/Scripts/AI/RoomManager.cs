@@ -74,7 +74,7 @@ public class RoomManager : NetworkBehaviour
 
     IEnumerator Delayed()
     {
-        // Wait until PoolManager has registered rooms
+        // Wait until pool manager has registered rooms
         while (!PoolManager.Instance.RoomsRegistered)
             yield return null;
 
@@ -87,7 +87,7 @@ public class RoomManager : NetworkBehaviour
         }
     }
 
-    /// Generates a chain of rooms connected via anchor points
+    // Generates a chain of rooms connected via anchor points
     public void GenerateRoomChain()
     {
         if (!IsServer)
@@ -128,6 +128,8 @@ public class RoomManager : NetworkBehaviour
         {
             Debug.Log("Spawning Boss Room at end of chain");
             SpawnAndConnectRoom(bossRoomPrefab);
+            
+            
         }
         else
         {
@@ -135,7 +137,7 @@ public class RoomManager : NetworkBehaviour
         }
     }
 
-    //Spawns a room from the pool and connects it to the last room
+    // Spawns a room from the pool and connects it to the last room
     private void SpawnAndConnectRoom(Room roomPrefab)
     {
         if (lastSpawnedRoom == null)
@@ -156,9 +158,14 @@ public class RoomManager : NetworkBehaviour
         {
             lastSpawnedRoom = newRoom;
         }
+
+        if (newRoom.ExitDoor)
+        {
+            SpawnExitDoor(newRoom);
+        }
     }
 
-    /// Spawns a room from the pool manager
+    // Spawns a room from the pool manager
     private Room SpawnRoom(Room roomPrefab, Vector3 position, Quaternion rotation)
     {
         var pool = PoolManager.Instance?.GetRandomRoomPool(roomPrefab.type.ToString());
@@ -186,9 +193,39 @@ public class RoomManager : NetworkBehaviour
 
         return room;
     }
+    private void SpawnExitDoor(Room room)
+    {
+        // Null checks 
+        if (room.AnchorEnd == null)
+        {
+            Debug.LogError($"Room '{room.name}' has no AnchorEnd!");
+            return;
+        }
+        if (room.ExitDoor == null)
+        {
+            Debug.LogError($"Room '{room.name}' has no ExitDoor prefab assigned!");
+            return;
+        }
+
+        // Instantiate door object (not pooled)
+        NetworkObject doorInstance = Instantiate(room.ExitDoor);
+
+        // Position + rotation to match end anchor
+        doorInstance.transform.SetPositionAndRotation(
+            room.AnchorEnd.position,
+            room.AnchorEnd.rotation
+        );
+
+    
+
+        // Spawn to network
+        if (!doorInstance.IsSpawned)
+            doorInstance.Spawn(true);
+
+    }
 
 
-    /// Calculates the position and rotation needed to connect newRoom to previousRoom
+    // Calculates the position and rotation needed to connect newRoom to previousRoom
     private void CalculateConnectionTransform(
         Room previousRoom,
         Room newRoomPrefab,
@@ -198,7 +235,7 @@ public class RoomManager : NetworkBehaviour
         var prevEnd = previousRoom.AnchorEnd;
         var newStart = newRoomPrefab.AnchorStart;
 
-        //Previous must always have an end anchor to connect FROM
+        //Previous must always have an end anchor to connect from
         if (prevEnd == null)
         {
             Debug.LogWarning($"Previous room '{previousRoom.name}' has no AnchorEnd. Fallback.");
@@ -232,21 +269,14 @@ public class RoomManager : NetworkBehaviour
     }
 
 
-    /// Determines what type of room should come next in the chain
+    // Determines what type of room should come next in the chain
     private Room.Type DetermineNextRoomType(int index)
     {
-        // Example logic: alternate between corridors and rooms
-        if (index % 2 == 0)
-        {
-            return Room.Type.Corridor;
-        }
-        else
-        {
-            return Room.Type.Room;
-        }
+        // After each room there should be a corridor
+        return index % 2 == 0 ? Room.Type.Corridor : Room.Type.Room;
     }
 
-    /// Gets a random room prefab of the specified type
+    // Gets a random room prefab of a type
     private Room GetRandomRoomOfType(Room.Type type)
     {
         var key = type.ToString();
@@ -271,7 +301,7 @@ public class RoomManager : NetworkBehaviour
 
 
 
-    /// Clears all spawned rooms
+    // Clears all spawned rooms
     public void ClearRooms()
     {
         if (!IsServer) return;

@@ -59,30 +59,30 @@ public class WorldReader : NetworkBehaviour
             if (results[i].transform.root == transform.root)
                 continue; 
 
+                       
+            if(!FOVCheck(results[i].transform.position))
+                continue;
             
-           /*if(!FOVCheck(results[i].point))
-               continue;*/
-            
-            //check if the target is an AITarget
+            // Check if the target is an AITarget
             if (!results[i].TryGetComponent(out AITarget target)) continue;
             
             
-            //check if the target is an ally we want to consider
+            // Check if the target is an ally we want to consider
             if(target.gameObject.TryGetComponent(out PlayerController player))
             {
                   
-                        //add the agent to the list
+                        //Add the agent to the list
                         nearbyTargets.Add(target.NetworkObject);
-                        //increment the count
+                        //Increment the count
                         playerCount++;
-                        //add the position to the list
+                        //Add the position to the list
                         var position = player.transform.position;
-                        //add the position to the list
+                        //Add the position to the list
                         nearbyTargetsPos.Add(position);
-                        //add the distance to the avg distance
+                        //Add the distance to the avg distance
                         var distance = (position - transform.position).magnitude;
                         avgDistance += distance;
-
+                        //Set closest target
                         if (distance < closestDistance)
                         {
                             ClosestTarget = target.NetworkObject;
@@ -90,9 +90,9 @@ public class WorldReader : NetworkBehaviour
                         }
 
                         continue;
-                    
-          
+                
             }
+            
             if(target.TryGetComponent(out Agent agent))
             {
                 if (agent != null && agent.enabled && agent.gameObject.activeInHierarchy)
@@ -109,10 +109,10 @@ public class WorldReader : NetworkBehaviour
         
         
         if(playerCount > 0)
-            //normalize the avg distance
+            // Normalize the avg distance
             avgDistance /= playerCount;
         else
-            //set the avg distance to 0
+            // Set the avg distance to 0
             avgDistance = 0f;
     }
 
@@ -123,8 +123,7 @@ public class WorldReader : NetworkBehaviour
         Gizmos.DrawWireSphere(transform.position,radius);
         
     }
-
-
+    
     public bool FOVCheck(Vector3 target)
     {
         Vector3 toTarget = (target - transform.position).normalized;

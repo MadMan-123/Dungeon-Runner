@@ -120,6 +120,8 @@ public class FPSManager : NetworkManager
                     loader.LoadClassData(player.currentClass);
                 else
                     loader.enabled = false; // disabled in lobby
+
+                loader.playerName = kv.Key;
             }
 
             if (obj.TryGetComponent(out PlayerUI ui))

@@ -118,22 +118,24 @@ public class PlayerController : NetworkBehaviour
 
     private void Move()
     {
-        //get the axis input
+        // Get the axis input
         moveHorizontal = Input.GetAxis("Horizontal");
         moveVertical = Input.GetAxis("Vertical");
-        //see if the player should run
+        // See if the player should run
         speedMultiplier = Input.GetKey(KeyCode.LeftShift) ? runSpeed : 1f;
 
-        //get the transform of the player
+        // Get the transform of the player
         moveTransform = transform;
-        //calculate the move vector
+        // Calculate the move vector
         moveVector = (moveTransform.forward * moveVertical + moveTransform.right * moveHorizontal) * (movementSpeed * speedMultiplier);
     
-        //sync the rotation of the camera with the player
+        // Sync the rotation of the camera with the player
         yRotation = camera.transform.rotation.eulerAngles.y;
         transform.rotation = Quaternion.Euler(0, yRotation, 0);
-        
-
+       
+        if(Input.GetKeyDown(KeyCode.Space))
+            Jump();
+        //Gravity
         force -= 9.81f * Time.deltaTime;
         jumpVec = new Vector3(0, force, 0);
         characterController.Move((moveVector + jumpVec) * Time.deltaTime);

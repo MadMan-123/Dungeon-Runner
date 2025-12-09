@@ -19,6 +19,7 @@ public class AgentManager : NetworkBehaviour
 
     private void Start()
     {
+        //Singleton
         if (!Instance)
         {
             Instance = this;
@@ -33,32 +34,31 @@ public class AgentManager : NetworkBehaviour
     {
         base.OnNetworkSpawn();
 
+        // Spawn in agents
         StartCoroutine(delay());
+        
         IEnumerator delay()
         {
-            yield return new WaitForSeconds(0.5f);
-            SpawnIn(4);
+            yield return new WaitForSeconds(1f);
+            SpawnIn(10);
         }
     }
 
 
-
+    
     public void SpawnIn(int amount)
     {
-        StartCoroutine(delay());
-        IEnumerator delay()
-        {
-            yield return new WaitForSeconds(1f);
-            SpawnInAgentsServerRPC(amount);
-        } 
+        SpawnInAgentsServerRPC(amount);
     }
 
     [ServerRpc]
     private void SpawnInAgentsServerRPC(int amount)
     {
-           
+        // Get key
         const string key = nameof(Agent);
+        // Get Pool
         var pool = poolManager.GetPool(key);
+        // Get spawn points
         if (SpawnPointManager.Instance == null)
         {
             Debug.LogError("SpawnPointManager.Instance is null");
@@ -68,8 +68,10 @@ public class AgentManager : NetworkBehaviour
         // Ensure points are current in case rooms/spawn markers were generated after Awake.
         SpawnPointManager.Instance.RefreshPoints();
         var map = SpawnPointManager.Instance.pointMap;
+        
         Debug.Log($"[AgentManager] Spawn map counts: " + string.Join(", ", map.Select(kv => $"{kv.Key}={kv.Value.Length}")));
 
+        // Get Enemy spawn points
         spawnPoints = SpawnPointManager.Instance.GetPoints("Enemy");
         if (pool == null)
         {
@@ -82,15 +84,15 @@ public class AgentManager : NetworkBehaviour
             Debug.LogError("Spawn points are null or empty. Call SpawnPointManager.RefreshPoints after room generation.");
             return;
         }
+        
+        // Max attempts
         int maxSpawns = Mathf.Min(amount, spawnPoints.Length);
  
-        
-        //try not to spawn two enemies on 1 point
+        // Try not to spawn two enemies on 1 point
         HashSet<int> used = new();
         int tried = 0;
         for (int i = 0; i < maxSpawns; i++)
         {
-          
             
             // Find a free spawn point
             int attempts = 0;
@@ -107,22 +109,29 @@ public class AgentManager : NetworkBehaviour
                 }
 
             } while (used.Contains(index));
-            
+         
+            //Add the used Point to set
             used.Add(index);
+            //Get agent and set pos
             var obj = pool.data.GetObject();
             if (obj == null) 
                 return;
+            //Get Point
             var point = spawnPoints[index];
             if (point == null)
             {
                 Debug.LogError("No point was valid`");
             }
+            
             obj.transform.SetPositionAndRotation(point.position, point.rotation);
 
+            //Sync to network
             if (!obj.IsSpawned)
                 obj.Spawn(true);
             obj.transform.SetParent(pool.parent.transform, true);
- 
+
+            
+            //Initialise the agent
             if (obj.TryGetComponent(out Agent agent))
             {
                 agent.Init(point.position + Vector3.up * 2f, Quaternion.Euler(-90,0,0), pool.data);

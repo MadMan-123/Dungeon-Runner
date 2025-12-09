@@ -6,6 +6,14 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.UI;
+
 public class ChatManager : NetworkBehaviour
 {
     #region Chat
@@ -72,7 +80,7 @@ public class ChatManager : NetworkBehaviour
         chatContainer.SetActive(isShowing);
     }
 
-    //on enter being pressed
+    // On enter being pressed
     private void OnEnterPressed(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
@@ -89,7 +97,7 @@ public class ChatManager : NetworkBehaviour
 
     private void AskForPlayersName()
     {
-        //add a chat message from the server
+        // Add a chat message from the server
         string message = "[Server]: Please Enter your name";
 
         AddMessage(message);
@@ -121,20 +129,20 @@ public class ChatManager : NetworkBehaviour
         }
 
         
-        //send to all clients
+        // Send to all clients
         SendChatMessageClientRPC(message,name,senderID);
     }
 
     [ClientRpc]
     public void SendChatMessageClientRPC(string message,string playerName, ulong senderID)
     {
-        //add the message to the chat
+        // Add the message to the chat
         AddMessage($"[{playerName}]:{message}");
     }
 
     public void AddMessage(string message)
     {
-        //get one of the messages
+        // Get one of the messages
         var m = GetMessage();
 
         m.SetMessage(message);
