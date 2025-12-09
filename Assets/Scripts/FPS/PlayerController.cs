@@ -52,6 +52,19 @@ public class PlayerController : NetworkBehaviour
 
     }
 
+    public void CursorControll(bool shouldLock)
+    {
+        if(shouldLock)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true; 
+        }
+    }
     public IEnumerator WaitAndSpawn()
     {
         //this is bullshit

@@ -30,25 +30,43 @@ public class PlayerManager : NetworkBehaviour
     public int maxPlayers = 4;
     public NetworkVariable<int> currentPlayers = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+    public bool isPersistentRuntimeInstance = false;
 
-    private void Start()
+    private void Awake()
     {
-        DontDestroyOnLoad(gameObject); 
+        if (instance == null)
+        {
+            // First ever creation (lobby start)
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+            isPersistentRuntimeInstance = true;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        } 
+        
+       
+    }
+
+    public void ValidateSingleton()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        // This is the true instance
+        instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     public override void OnNetworkSpawn()
     {
-        if (!instance)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(instance);
-        }
-        
-        
         base.OnNetworkSpawn();
+        if (isPersistentRuntimeInstance)
+            instance = this; 
     }
 
   

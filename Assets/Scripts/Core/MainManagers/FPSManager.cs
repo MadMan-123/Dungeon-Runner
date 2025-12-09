@@ -60,40 +60,70 @@ public class FPSManager : NetworkManager
         }
         Loader.LoadNetwork(Loader.Scene.World);
     }
-    private void OnSceneLoadedForAll(string sceneName, LoadSceneMode mode,List<ulong> clientsComplete, List<ulong> clientsTimedOut)
+    private void OnSceneLoadedForAll(string sceneName, LoadSceneMode mode,
+        List<ulong> clientsComplete, List<ulong> clientsTimedOut)
     {
-        if (sceneName != "Main World")
-            return;
         Debug.Log($"[FPSManager] Scene load completed for '{sceneName}'. " +
                   $"IsServer={IsServer}, IsHost={IsHost}, IsClient={IsClient}. " +
                   $"Clients complete: {clientsComplete.Count}, timed out: {clientsTimedOut.Count}");
-        SetupPlayersAfterSceneLoad();
+
+        SetupPlayersAfterSceneLoad(sceneName);
     }
-    private void SetupPlayersAfterSceneLoad()
+
+    private void SetupPlayersAfterSceneLoad(string sceneName)
     {
         foreach (var kv in PlayerManager.instance.playerMap)
         {
-            var player = kv.Value; 
+            var player = kv.Value;
             var obj = player.networkObject;
+
+            var isWorld = sceneName == "Main World";
+           
+            if(!isWorld)
+                PlayerManager.instance.ValidateSingleton();
             
-            if ( obj.TryGetComponent(out PlayerController ctrl))
+            if (obj.TryGetComponent(out PlayerController controller))
             {
-                if ( ctrl.IsOwner)
+                if (isWorld)
                 {
-                    ctrl.camera.enabled = true;
+                    // Enable controller
+                    controller.enabled = true;
+
+                    // Only owner's camera
+                    if (controller.IsOwner)
+                        controller.camera.enabled = true;
+
+                    
+                    StartCoroutine(controller.WaitAndSpawn());
                 }
-                StartCoroutine(ctrl.WaitAndSpawn());
+                else
+                {
+                    // Disable in lobby
+                    controller.enabled = false;
+                    controller.CursorControll(false);
+                    if (controller.camera != null)
+                        controller.camera.enabled = false;
+                }
+            }
+
+            if (obj.TryGetComponent(out WeaponHandler weapon))
+            {
+                if (isWorld)
+                    weapon.enabled = true;
+                else
+                    weapon.enabled = false;
             }
 
             if (obj.TryGetComponent(out PlayerDataLoader loader))
             {
-                loader.LoadClassData(player.currentClass);    
+                if (isWorld)
+                    loader.LoadClassData(player.currentClass);
+                else
+                    loader.enabled = false; // disabled in lobby
             }
-            
         }
-        
     }
-    
+
 
  
 
