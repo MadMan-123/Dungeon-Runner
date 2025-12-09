@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using System.Linq;
+using Core;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -212,5 +213,13 @@ public class LobbyManager : NetworkBehaviour
     {
         var manager = (FPSManager)(NetworkManager.Singleton);
         manager.LoadWorld();
+    }
+
+    public void LeaveGame()
+    {
+        NetworkManager.Singleton.Shutdown();
+        Destroy(players.gameObject);
+        Loader.Load(Loader.Scene.MainMenu);
+        
     }
 }
