@@ -132,12 +132,16 @@ public class PlayerManager : NetworkBehaviour
 
     public PlayerDataDescriptor GetPlayerById(ulong senderID)
     {
-        var player = playerMap.Values.ToList().Find(p => p.id == senderID);
-        if (player != null) return player;
+        foreach (var p in playerMap.Values)
+        {
+            if (p.id == senderID)
+                return p;
+        }
 
         Debug.LogWarning($"No player with id {senderID} found");
         return null;
     }
+
     
     public string GetNameByData(PlayerDataDescriptor data)
     {

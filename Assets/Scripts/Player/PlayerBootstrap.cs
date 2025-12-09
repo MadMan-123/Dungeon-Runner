@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -69,14 +70,16 @@ public class PlayerBootstrap : NetworkBehaviour
         players.AddPlayer(playerName, data);
         var clientParams = new ClientRpcParams
         {
-            Send = new ClientRpcSendParams { TargetClientIds = new[] { senderId } }
+            Send = new ClientRpcSendParams { TargetClientIds = NetworkManager.Singleton.ConnectedClientsIds.ToArray() }
         };
-        ApplyAddClientRPC(playerName, idx, senderId,clientParams);
+        ApplyAddClientRPC(playerName, idx, senderId, clientParams);
+
     }
     
     [ClientRpc]
     private void ApplyAddClientRPC(string playerName, int index, ulong id, ClientRpcParams clientRpcParams = default)
     {
+        
         if (players == null) players = PlayerManager.instance;
         if (!players.HasPlayer(playerName))
         {

@@ -42,6 +42,8 @@ public class LobbyManager : NetworkBehaviour
         }
 
         SyncLobbyUI();
+        
+        nameInput.onSubmit.AddListener(GetName);
     }
 
     public void SyncLobbyUI()
