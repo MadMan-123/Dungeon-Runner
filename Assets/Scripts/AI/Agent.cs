@@ -37,13 +37,13 @@ public class Agent : NetworkBehaviour
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float lowHealthThreshold = 15f;
 
-    private AgentState currentState = AgentState.Wander;
+    public NavMeshAgent navAgent;
+    public AgentState currentState = AgentState.Wander;
 
     public WorldReader reader;
     public Behaviour[] CurrentBehaviours ;
     public float MaxCurrentSpeed = 5;
     private NetworkGameObjectPool poolRef;
-    private NavMeshAgent navAgent;
     private Health health;
     private float wanderAngle = 0;
     private Vector3 steeringVelocity = new();
@@ -59,6 +59,15 @@ public class Agent : NetworkBehaviour
 
     private void Start()
     {
+        if (reader == null)
+        {
+            reader = GetComponent<WorldReader>();
+            if (reader == null)
+            {
+                Debug.LogError("[Agent] Missing WorldReader reference");
+            }
+        }
+
         Behaviour seek;
         seek.function = Seek;
         seek.weight = 0;
@@ -90,7 +99,7 @@ public class Agent : NetworkBehaviour
         //fill in the behaviours
         CurrentBehaviours = new[] {seek,flee,arrival,obstacle,wander,alignment,cohesion,separation};
 
-        navAgent.updateRotation = false;
+    navAgent.updateRotation = false;
 
     }
     
@@ -135,6 +144,10 @@ public class Agent : NetworkBehaviour
     {
         if(!IsServer)
             return;
+
+        if (reader == null)
+            return;
+
         EvaluateState();
         ApplyStateWeights();
 
@@ -184,7 +197,7 @@ public class Agent : NetworkBehaviour
             transform.position.y,
             circlePos.z + offsetZ);
             
-        return (transform.position - targetPos).normalized * MaxCurrentSpeed;
+        return (targetPos - transform.position).normalized * MaxCurrentSpeed;
     }
     private Vector3 Idle()
     {

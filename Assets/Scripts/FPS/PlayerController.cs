@@ -68,6 +68,8 @@ public class PlayerController : NetworkBehaviour
        
         if(!isLobby)
             camera.enabled = IsOwner;
+       
+        
         
         points?.SpawnPlayerIn(gameObject);
     }

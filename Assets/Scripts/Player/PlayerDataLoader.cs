@@ -36,7 +36,7 @@ public class PlayerDataLoader : NetworkBehaviour
     {
         yield return new WaitForSeconds(0.15f);
           var model = ClassMetaData.instance.GetModelByClass(type);
-          if (!model) yield return null;
+          if (!model) yield break;
                 
                 var name = model.name;
         

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.AI.Navigation;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -77,6 +78,11 @@ public class RoomManager : NetworkBehaviour
 
         yield return new WaitForSeconds(0.1f); 
         GenerateRoomChain();
+        SpawnPointManager.Instance.GetAllSpawnPoints();
+        if (MainHub.TryGetComponent(out NavMeshSurface surface))
+        {
+            surface.BuildNavMesh();
+        }
     }
 
     /// Generates a chain of rooms connected via anchor points
@@ -142,43 +148,32 @@ public class RoomManager : NetworkBehaviour
     /// Spawns a room from the pool manager
     private Room SpawnRoom(Room roomPrefab, Vector3 position, Quaternion rotation)
     {
-        // Get pool key based on room type
-        string poolKey = roomPrefab.type.ToString();
-        var pool = PoolManager.Instance?.GetRandomRoomPool(poolKey);
+        var pool = PoolManager.Instance?.GetRandomRoomPool(roomPrefab.type.ToString());
 
-        if (pool == null)
-        {
-            Debug.LogError($"Room pool not found for key: {poolKey}. Spawning directly.");
-            
-            var instance = Instantiate(roomPrefab.gameObject, position, rotation);
-            var netObj = instance.GetComponent<NetworkObject>();
-            if (netObj != null)
-            {
-                netObj.Spawn();
-            }
-            var room = instance.GetComponent<Room>();
-            spawnedRooms.Add(room);
-            return room;
-        }
+        NetworkObject netObj = null;
 
-        // Get from pool
-        var pooledObj = pool.data.GetObject();
-        
-        if (pooledObj != null)
+        if (pool != null)
         {
+            var pooledObj = pool.data.GetObject();
             pooledObj.transform.position = position;
             pooledObj.transform.rotation = rotation;
-            
-            var room = pooledObj.GetComponent<Room>();
-            spawnedRooms.Add(room);
-            
-            Debug.Log($"Spawned room from pool: {poolKey} at {position}");
-            return room;
+            netObj = pooledObj;
         }
-        
-        Debug.LogError($"Failed to get room from pool: {poolKey}");
-        return null;
+        else
+        {
+            var instance = Instantiate(roomPrefab.gameObject, position, rotation);
+            netObj = instance.GetComponent<NetworkObject>();
+        }
+
+        if (!netObj.IsSpawned)
+            netObj.Spawn(); // syncs to all clients
+
+        var room = netObj.GetComponent<Room>();
+        spawnedRooms.Add(room);
+
+        return room;
     }
+
 
     /// Calculates the position and rotation needed to connect newRoom to previousRoom
     private void CalculateConnectionTransform(
@@ -272,20 +267,17 @@ public class RoomManager : NetworkBehaviour
         {
             if (room != null)
             {
-                string poolKey = room.type.ToString();
-                var pool = PoolManager.Instance?.GetPool(poolKey);
-                
+                var pool = PoolManager.Instance.GetPool(room.type.ToString());
                 if (pool != null)
+                    pool.data.ReturnObject(room.NetworkObject); // despawn and return to pool
+                else
                 {
-                    pool.data.ReturnObject(room.NetworkObject);
-                }
-                else if (room.GetComponent<NetworkObject>() != null)
-                {
-                    room.GetComponent<NetworkObject>().Despawn();
+                    room.NetworkObject.Despawn();
                     Destroy(room.gameObject);
                 }
             }
         }
+
 
         spawnedRooms.Clear();
         lastSpawnedRoom = null;

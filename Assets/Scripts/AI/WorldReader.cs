@@ -15,9 +15,9 @@ public class WorldReader : NetworkBehaviour
     public int Count = 0;
     private bool shouldDebug = false;
     public float avgDistance = 0f;
+    public LayerMask detectionMask = -1; 
 
-
-    private Collider[] hits = new Collider[64]; // non-alloc buffer
+    public Collider[] results = new Collider[64]; // non-alloc buffer
     private List<Vector3> nearbyTargetsPos = new(10);
     private List<Vector3> nearbyAllyPos = new(25);
 
@@ -25,9 +25,14 @@ public class WorldReader : NetworkBehaviour
     public float closestDistance = 0;
     private void Update()
     {
+        if(!IsServer)
+            return;
+        
+        // Clear the results array to remove stale references
+        Array.Clear(results, 0, results.Length);
+        
         //do a circle cast
-        int count = Physics.OverlapSphereNonAlloc(
-            transform.position, radius, hits);
+        var size = Physics.OverlapSphereNonAlloc(transform.position, radius, results, detectionMask);
 
         //Set data to default values
         avgDistance = 0f;
@@ -41,57 +46,70 @@ public class WorldReader : NetworkBehaviour
         
         var allyCount = 0;
         var playerCount = 0;
-        Count = count; 
+        Count = size; 
         //get all the agents
-        for (int i = 0; i < count; i++)
+        
+        print($"{Count}");
+        for (int i = 0; i < Count; i++)
         {
             
-           /*if(!FOVCheck(hits[i].point))
+            // Skip null or invalid colliders
+            if (results[i] == null || results[i].gameObject == null)
+                continue;
+            
+            if (results[i].transform.root == transform.root)
+                continue; 
+
+            
+           /*if(!FOVCheck(results[i].point))
                continue;*/
             
             //check if the target is an AITarget
-            if (!hits[i].GetComponent<Collider>().TryGetComponent(out AITarget target)) continue;
+            if (!results[i].TryGetComponent(out AITarget target)) continue;
             
             
             //check if the target is an ally we want to consider
             if(target.gameObject.TryGetComponent(out PlayerController player))
             {
-                    //add the agent to the list
-                    nearbyTargets.Add(target.NetworkObject);
-                    //increment the count
-                    playerCount++;
-                    //add the position to the list
-                    var position = player.transform.position;
-                    //add the position to the list
-                    nearbyTargetsPos.Add(position);
-                    //add the distance to the avg distance
-                    var distance = (position - transform.position).magnitude;
-                    avgDistance += distance;
+                  
+                        //add the agent to the list
+                        nearbyTargets.Add(target.NetworkObject);
+                        //increment the count
+                        playerCount++;
+                        //add the position to the list
+                        var position = player.transform.position;
+                        //add the position to the list
+                        nearbyTargetsPos.Add(position);
+                        //add the distance to the avg distance
+                        var distance = (position - transform.position).magnitude;
+                        avgDistance += distance;
 
-                    if (distance < closestDistance)
-                    {
-                        ClosestTarget = target.NetworkObject;
-                        closestDistance = distance;
-                    }
+                        if (distance < closestDistance)
+                        {
+                            ClosestTarget = target.NetworkObject;
+                            closestDistance = distance;
+                        }
 
-                    continue;
+                        continue;
+                    
+          
             }
             if(target.TryGetComponent(out Agent agent))
             {
-                //add the agent to the list
-                nearbyAllies.Add(agent);
-                //increment the count
-                allyCount++;
-                var pos = target.transform.position;
-                nearbyAllyPos.Add(pos);
-                continue;
+                if (agent != null && agent.enabled && agent.gameObject.activeInHierarchy)
+                {
+                    nearbyAllies.Add(agent);
+                    allyCount++;
+                    var pos = target.transform.position;
+                    nearbyAllyPos.Add(pos);
+                }
             }
             
             
         }
         
         
-        if(count > 0)
+        if(playerCount > 0)
             //normalize the avg distance
             avgDistance /= playerCount;
         else

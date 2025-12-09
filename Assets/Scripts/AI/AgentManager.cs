@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Core;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -44,7 +45,12 @@ public class AgentManager : NetworkBehaviour
 
     public void SpawnIn(int amount)
     {
-        SpawnInAgentsServerRPC(amount);
+        StartCoroutine(delay());
+        IEnumerator delay()
+        {
+            yield return new WaitForSeconds(1f);
+            SpawnInAgentsServerRPC(amount);
+        } 
     }
 
     [ServerRpc]
@@ -53,6 +59,17 @@ public class AgentManager : NetworkBehaviour
            
         const string key = nameof(Agent);
         var pool = poolManager.GetPool(key);
+        if (SpawnPointManager.Instance == null)
+        {
+            Debug.LogError("SpawnPointManager.Instance is null");
+            return;
+        }
+
+        // Ensure points are current in case rooms/spawn markers were generated after Awake.
+        SpawnPointManager.Instance.RefreshPoints();
+        var map = SpawnPointManager.Instance.pointMap;
+        Debug.Log($"[AgentManager] Spawn map counts: " + string.Join(", ", map.Select(kv => $"{kv.Key}={kv.Value.Length}")));
+
         spawnPoints = SpawnPointManager.Instance.GetPoints("Enemy");
         if (pool == null)
         {
@@ -60,9 +77,9 @@ public class AgentManager : NetworkBehaviour
             return;
         }
 
-        if (spawnPoints == null)
+        if (spawnPoints == null || spawnPoints.Length == 0)
         {
-            Debug.LogError("Spawn points are null");
+            Debug.LogError("Spawn points are null or empty. Call SpawnPointManager.RefreshPoints after room generation.");
             return;
         }
         int maxSpawns = Mathf.Min(amount, spawnPoints.Length);
@@ -96,7 +113,10 @@ public class AgentManager : NetworkBehaviour
             if (obj == null) 
                 return;
             var point = spawnPoints[index];
-
+            if (point == null)
+            {
+                Debug.LogError("No point was valid`");
+            }
             obj.transform.SetPositionAndRotation(point.position, point.rotation);
 
             if (!obj.IsSpawned)
