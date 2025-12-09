@@ -127,7 +127,6 @@ public class Agent : NetworkBehaviour
         {
             Debug.LogError("No navmesh agent found");
         }
-        
 
         if (!IsServer)
         {

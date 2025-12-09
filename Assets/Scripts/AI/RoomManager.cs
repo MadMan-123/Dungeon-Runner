@@ -78,7 +78,6 @@ public class RoomManager : NetworkBehaviour
         while (!PoolManager.Instance.RoomsRegistered)
             yield return null;
 
-        yield return new WaitForSeconds(0.1f); 
         GenerateRoomChain();
         SpawnPointManager.Instance.GetAllSpawnPoints();
         if (MainHub.TryGetComponent(out NavMeshSurface surface))
@@ -135,6 +134,9 @@ public class RoomManager : NetworkBehaviour
         {
             Debug.LogWarning("Boss Room Prefab not assigned!");
         }
+        
+        SpawnPointManager.Instance.RefreshPoints();
+        
     }
 
     // Spawns a room from the pool and connects it to the last room

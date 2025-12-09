@@ -108,10 +108,7 @@ public class FPSManager : NetworkManager
 
             if (obj.TryGetComponent(out WeaponHandler weapon))
             {
-                if (isWorld)
-                    weapon.enabled = true;
-                else
-                    weapon.enabled = false;
+                weapon.enabled = isWorld;
             }
 
             if (obj.TryGetComponent(out PlayerDataLoader loader))

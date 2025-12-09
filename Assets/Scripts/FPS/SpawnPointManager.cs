@@ -20,9 +20,21 @@ public class SpawnPointManager : NetworkBehaviour
     
     public static SpawnPointManager Instance;
 
-    [SerializeField] private Point[] spawnPoints = new Point[50];
+    [SerializeField] private Point[] spawnPoints = new Point[256];
     public Dictionary<string, Transform[]> pointMap = new();
-    
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        StartCoroutine(delay());
+    }
+
+    IEnumerator delay()
+    {
+        yield return new WaitForSeconds(1f);
+        RefreshPoints();    
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -61,6 +73,13 @@ public class SpawnPointManager : NetworkBehaviour
         }
 
         spawnPoints = allPoints.ToArray();
+        
+        for (int i = spawnPoints.Length - 1; i > 0; i--)
+        {
+            int rand = Random.Range(0, i + 1);
+            (spawnPoints[i], spawnPoints[rand]) = (spawnPoints[rand], spawnPoints[i]);
+        }
+ 
     }
 
     private void BuildPointMap()
@@ -94,15 +113,7 @@ public class SpawnPointManager : NetworkBehaviour
     }
 
 
-    const int MAX_SIZE = 100;
-    private void Start()
-    {
-        // Ensure map is ready even if Awake ran before runtime-generated rooms spawned.
-        if (pointMap.Count == 0)
-        {
-            RefreshPoints();
-        }
-    }
+
 
 
     public Transform[] GetPoints(string tag)
@@ -113,6 +124,7 @@ public class SpawnPointManager : NetworkBehaviour
             return Array.Empty<Transform>();
         }
 
+        Debug.Log($"{tag} has loaded {transforms.Length} spawn points");
         return transforms;
     }
 
@@ -140,8 +152,7 @@ public class SpawnPointManager : NetworkBehaviour
         player.transform.position = spawnPos;
         player.transform.rotation = point.rotation;
 
-        var controller = player.GetComponent<CharacterController>();
-        if (controller != null)
+        if (player.TryGetComponent(out CharacterController controller))
         {
             StartCoroutine(FreezeControllerOneFrame(controller));
         }
