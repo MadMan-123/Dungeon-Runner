@@ -910,9 +910,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 102683554}
-        m_TargetAssemblyTypeName: FPSManager, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 102683556}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: JoinButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1719,7 +1719,7 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1781498493}
-    PlayerPrefab: {fileID: 2687996144027486642, guid: 75e564af2b5896c42ae3914b4cbc2c1e, type: 3}
+    PlayerPrefab: {fileID: 2770055899757152046, guid: 75e564af2b5896c42ae3914b4cbc2c1e, type: 3}
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: 1c99c7a3ee128c94bbcd3e46dde9a2b8, type: 2}

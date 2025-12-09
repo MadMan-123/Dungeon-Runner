@@ -26,7 +26,6 @@ public class PlayerBootstrap : NetworkBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
-        // Stable name derived from OwnerClientId; server is authoritative
         var name = $"Player{OwnerClientId}";
         // Only set the local player's display name on their own client
         if (IsOwner || IsLocalPlayer)

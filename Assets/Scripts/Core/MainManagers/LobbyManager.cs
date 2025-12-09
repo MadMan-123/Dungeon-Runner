@@ -214,9 +214,50 @@ public class LobbyManager : NetworkBehaviour
         var manager = (FPSManager)(NetworkManager.Singleton);
         manager.LoadWorld();
     }
+    [ServerRpc(RequireOwnership = false)]
+    public void RemovePlayerServerRPC(string playerName, ServerRpcParams rpcParams = default)
+    {
+        if (players == null) players = PlayerManager.instance;
+
+        if (!players.HasPlayer(playerName))
+            return;
+
+        // Remove from server-side map
+        players.RemovePlayer(playerName);
+        players.currentPlayers.Value--;
+
+        // Inform all clients to update their local state
+        var clientParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = NetworkManager.Singleton.ConnectedClientsIds.ToArray()
+            }
+        };
+        ApplyRemoveClientRPC(playerName, clientParams);
+    }
+    [ClientRpc]
+    private void ApplyRemoveClientRPC(string playerName, ClientRpcParams clientRpcParams = default)
+    {
+        if (players == null) players = PlayerManager.instance;
+
+        if (players.HasPlayer(playerName))
+            players.RemovePlayer(playerName);
+
+        IEnumerator DelayedVisualUpdate()
+        {
+            yield return new WaitForSeconds(0.15f);
+            UpdatePlayerList();
+            UpdatePlayerCountText();
+            UpdateReadyCountText(readyCount.Value);
+        }
+
+        StartCoroutine(DelayedVisualUpdate());
+    }
 
     public void LeaveGame()
     {
+        RemovePlayerServerRPC(currentName);
         NetworkManager.Singleton.Shutdown();
         Destroy(players.gameObject);
         Loader.Load(Loader.Scene.MainMenu);

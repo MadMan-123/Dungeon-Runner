@@ -59,5 +59,7 @@ public class PlayerDataLoader : NetworkBehaviour
                     handler.canFire = true;
                 }
 
+       
+
     }
 }
